@@ -109,7 +109,7 @@ impl Game {
             players.push(Player {
                 cards: [deck.pop().unwrap(), deck.pop().unwrap()],
                 chips: 500,
-                ip: "localhost".as_bytes().iter(),
+                ip: "localhost".as_bytes().try_into(),
                 folded: false,
                 hand: 0,
             });
