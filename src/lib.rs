@@ -107,9 +107,9 @@ impl Game {
         self.shuffle_deck(&mut deck);
         for _ in 0..num_players {
             players.push(Player {
-                cards: [deck.pop().unwrap(), deck.pop().unwrap()].to_vec(),
+                cards: [deck.pop().unwrap(), deck.pop().unwrap()],
                 chips: 500,
-                ip: "localhost".as_bytes().to_vec(),
+                ip: "localhost".as_bytes().iter(),
                 folded: false,
                 hand: 0,
             });

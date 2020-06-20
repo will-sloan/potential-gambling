@@ -40,7 +40,7 @@ templates and usages of `wasm-pack`.
 cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name my-project
 cd my-project
 ```
-
+star
 ### 🛠️ Build with `wasm-pack build`
 
 ```
