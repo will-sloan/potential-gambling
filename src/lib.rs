@@ -20,8 +20,11 @@ extern "C" {
 pub fn greet() {
     alert("Hello, poker-game!");
 }
+// use rand::seq::SliceRandom;
+// use rand::thread_rng;
+
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
-enum Suit {
+pub enum Suit {
     Heart = 0,
     Club = 1,
     Diamonds = 2,
@@ -47,34 +50,36 @@ pub enum Value {
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
-struct Card {
-    suit: Suit,
-    number: u8,
+pub struct Card {
+    pub suit: Suit,
+    pub number: u8,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
-struct Player {
-    cards: Vec<Card>,
-    chips: u32,
-    ip: String,
-    folded: bool,
-    hand: u8, // value of players hand
+pub struct Player {
+    pub cards: Vec<Card>,
+    pub chips: u32,
+    pub ip: String,
+    pub folded: bool,
+    pub hand: u8, // value of players hand
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
-struct Game {
-    players: Vec<Player>,
-    deck: Vec<Card>,
-    num: u8,
-    pool: u32,
-    flop: Option<Vec<Card>>,
+pub struct Game {
+    pub players: Vec<Player>,
+    pub deck: Vec<Card>,
+    pub num: u8,
+    pub pool: u32,
+    pub flop: Vec<Card>,
 }
+
+pub fn shuffle_deck(deck: &mut Vec<Card>) {
+    deck.shuffle(&mut thread_rng());
+}
+
 impl Game {
-    fn shuffle_deck(&self, deck: &mut Vec<Card>) {
-        deck.shuffle(&mut thread_rng());
-    }
     // used only at the start of the game
-    fn new_game(&self) -> Game {
+    pub fn new_game() -> Game {
         //, num_players: u8
         let num_players: u8 = 2;
         let mut deck: Vec<Card> = Vec::new();
@@ -105,34 +110,34 @@ impl Game {
                 }
             }
         }
-        self.shuffle_deck(&mut deck);
-        for _ in 0..num_players {
-            players.push(Player {
-                cards: [deck.pop().unwrap(), deck.pop().unwrap()].to_vec(),
-                chips: 500,
-                ip: String::from("localhost"),
-                folded: false,
-                hand: 0,
-            });
-        }
+        //shuffle_deck(&mut deck);
+        // for _ in 0..num_players {
+        //     players.push(Player {
+        //         cards: [deck.pop().unwrap(), deck.pop().unwrap()].to_vec(),
+        //         chips: 500,
+        //         ip: String::from("localhost"),
+        //         folded: false,
+        //         hand: 0,
+        //     });
+        // }
 
         Game {
             deck,
             players,
             num: num_players,
             pool: 0,
-            flop: None,
+            flop: Vec::new(),
         }
     }
     // Used after the hand is done
-    fn cont_game(&self, players: Vec<Player>, deck: &mut Vec<Card>, pool: u32) -> Game {
+    pub fn cont_game(&self, players: Vec<Player>, deck: &mut Vec<Card>, pool: u32) -> Game {
         let counter = 0;
         let mut new_player: Vec<Player> = Vec::new();
         for player in players {
             deck.push(player.cards[0]);
             deck.push(player.cards[1]);
         }
-        self.shuffle_deck(deck);
+        shuffle_deck(deck);
 
         for player_num in 0..counter {
             new_player[player_num].cards.push(deck.pop().unwrap());
@@ -142,29 +147,105 @@ impl Game {
             deck: deck.to_vec(),
             players: new_player,
             pool,
-            flop: None,
+            flop: Vec::new(),
         }
     }
 
-    fn check_cards(&self, players: &Vec<Player>, flop: &Vec<Card>) -> Player {
-        let mut points: HashMap<String, u8> = HashMap::new();
-        for player in players {
-            let flush = check_flush(&player.cards, flop);
-            let straight = check_straight(&player.cards, flop);
-            let pairs = check_pairs(&player.cards, flop);
-            if flush == 17 && straight == 18 {}
+    pub fn deal_to_players(&mut self) {
+        // goes puts all cards from players into deck
+        // Shuffles the cards
+        // then redeals
+        for index in 0..self.players.len() {
+            println!("Index of players");
+            match self.players[index].cards.pop() {
+                Some(card) => self.deck.push(card),
+                None => {
+                    println!("No cards in player");
+                    continue;
+                }
+            }
+            match self.players[index].cards.pop() {
+                Some(card) => self.deck.push(card),
+                None => {
+                    println!("No cards in player");
+                    continue;
+                }
+            }
         }
-        Player {
-            cards: [Card {
-                suit: Suit::Diamonds,
-                number: 12,
-            }]
-            .to_vec(),
-            chips: 500,
-            ip: String::from("Home"),
-            folded: false,
-            hand: 0,
+
+        shuffle_deck(&mut self.deck);
+
+        for index in 0..self.players.len() {
+            println!("Index of deck");
+            match self.deck.pop() {
+                Some(card) => self.players[index].cards.push(card),
+                None => panic!("No cards in deck"),
+            }
+            match self.deck.pop() {
+                Some(card) => self.players[index].cards.push(card),
+                None => panic!("No cards in deck"),
+            }
+            // self.players[index].cards.push(self.deck.pop().unwrap());
+            // self.players[index].cards.push(self.deck.pop().unwrap());
         }
+
+        //self.players.cards.push(self.deck.pop().unwrap());
+        //self.players.cards.push(self.deck.pop().unwrap());
+        //
+    }
+
+    pub fn check_cards(&mut self) -> String {
+        let mut points: HashMap<Player, u8> = HashMap::new();
+        for index in 0..self.players.len() {
+            let flush = check_flush(&self.players[index].cards, &self.flop.clone());
+            let straight = check_straight(&self.players[index].cards, &self.flop.clone());
+            let pairs = check_pairs(&self.players[index].cards, &self.flop.clone());
+
+            let value_of_hand = [
+                flush,
+                straight,
+                pairs,
+                self.players[index].cards.last().unwrap().number,
+                self.players[index].cards.first().unwrap().number,
+            ]
+            .iter()
+            .max()
+            .unwrap()
+            .clone();
+            self.players[index].hand = value_of_hand;
+            points.insert(self.players[index].clone(), value_of_hand);
+        }
+        let mut max_player = self.players.first().unwrap();
+        let mut max_val = 0;
+        for (k, v) in points.iter() {
+            if *v > max_val as u8 {
+                max_player = k;
+                max_val = *v;
+            }
+        }
+
+        return max_player.ip.clone();
+        // Player {
+        //     cards: [Card {
+        //         suit: Suit::Diamonds,
+        //         number: 12,
+        //     }]
+        //     .to_vec(),
+        //     chips: 500,
+        //     ip: String::from("Home"),
+        //     folded: false,
+        //     hand: 0,
+        // }
+    }
+
+    pub fn do_flop(&mut self) {
+        for i in 0..3 {
+            self.flop.push(self.deck.pop().unwrap());
+        }
+    }
+
+    pub fn flip_one(&mut self) {
+        self.flop.push(self.deck.pop().unwrap());
     }
 }
 fn check_pairs(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
