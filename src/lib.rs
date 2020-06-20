@@ -51,22 +51,22 @@ struct Card {
     number: u8,
 }
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
+#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
 struct Player {
-    cards: [Card; 2],
+    cards: Vec<Card>,
     chips: u32,
-    ip: [u8; 10],
+    ip: String,
     folded: bool,
     hand: u8, // value of players hand
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
 struct Game {
-    players: [Player; 5],
-    deck: [Card; 52],
+    players: Vec<Player>,
+    deck: Vec<Card>,
     num: u8,
     pool: u32,
-    flop: [Card; 7],
+    flop: Option<Vec<Card>>,
 }
 impl Game {
     fn shuffle_deck(&self, deck: &mut Vec<Card>) {
@@ -107,9 +107,9 @@ impl Game {
         self.shuffle_deck(&mut deck);
         for _ in 0..num_players {
             players.push(Player {
-                cards: [deck.pop().unwrap(), deck.pop().unwrap()],
+                cards: [deck.pop().unwrap(), deck.pop().unwrap()].to_vec(),
                 chips: 500,
-                ip: "localhost".as_bytes().try_into(),
+                ip: String::from("localhost"),
                 folded: false,
                 hand: 0,
             });
@@ -124,21 +124,22 @@ impl Game {
         }
     }
     // Used after the hand is done
-    fn cont_game(&self, players: &mut Vec<Player>, mut deck: &mut Vec<Card>, pool: u32) -> Game {
+    fn cont_game(&self, players: Vec<Player>, deck: &mut Vec<Card>, pool: u32) -> Game {
+        let counter = 0;
+        let mut new_player: Vec<Player> = Vec::new();
         for player in players {
-            deck.push(player.cards.pop().unwrap());
-            deck.push(player.cards.pop().unwrap());
+            deck.push(player.cards[0]);
+            deck.push(player.cards[1]);
         }
-        self.shuffle_deck(&mut deck);
+        self.shuffle_deck(deck);
 
-        for player in players {
-            player.cards.push(deck.pop().unwrap());
-            player.cards.push(deck.pop().unwrap());
+        for player_num in 0..counter {
+            new_player[player_num].cards.push(deck.pop().unwrap());
         }
         Game {
-            num: players.len() as u8,
+            num: counter as u8,
             deck: deck.to_vec(),
-            players: players.to_vec(),
+            players: new_player,
             pool,
             flop: None,
         }
@@ -152,7 +153,7 @@ impl Game {
             }]
             .to_vec(),
             chips: 500,
-            ip: "Home".as_bytes().to_vec(),
+            ip: String::from("Home"),
             folded: false,
             hand: 0,
         }
@@ -239,9 +240,9 @@ impl Game {
     }
 
     fn check_flush(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
-        let suit_to_check_one: Suit = Suit::Error;
-        let suit_to_check_two: Suit = Suit::Error;
-        let cards: Vec<Suit> = [hand.last().unwrap().suit, hand.last().unwrap().suit].to_vec();
+        let mut suit_to_check_one: Suit = Suit::Error;
+        let mut suit_to_check_two: Suit = Suit::Error;
+        let mut cards: Vec<Suit> = [hand.last().unwrap().suit, hand.last().unwrap().suit].to_vec();
         for i in flop {
             cards.push(i.suit);
         }
