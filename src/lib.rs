@@ -249,56 +249,52 @@ impl Game {
     }
 }
 fn check_pairs(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
-    let mut card_nums: Vec<u8> = Vec::new();
-    for card in flop {
-        card_nums.push(card.number);
+    let mut temp_hand = hand.clone();
+    let mut temp_flop = flop.clone();
+    temp_hand.append(&mut temp_flop);
+    // Hashmap to store the number of occuances of each number
+    let mut count_of_each_card: HashMap<u8, u8> = HashMap::new();
+
+    for card in temp_hand {
+        let count = count_of_each_card.entry(card.number).or_insert(0);
+        *count += 1;
     }
-    let mut counter = 0;
-    let mut oneCard: bool = false;
-    // Check if same, so later checks are easier
-    let card_one;
-    let card_two;
-    if hand.first().unwrap().number == hand.last().unwrap().number {
-        oneCard = true;
-    }
-    // If there is only one unique card
-    if oneCard {
-        counter += flop
-            .iter()
-            .filter(|x| x.number == hand.first().unwrap().number)
-            .collect::<Vec<&Card>>()
-            .len()
-            + 1;
-        match counter {
-            _ => 0,
-            1 => 15,
-            2 => 19,
+
+    let mut vals = count_of_each_card.values().collect::<Vec<&u8>>();
+    vals.sort_by(|a, b| b.cmp(a));
+    println!("{:?}", count_of_each_card);
+    /*
+    Possible Combos:
+    Four of a kind: max_val[0] == 4
+    Full house: max_val[0] == 3 and max_val == 2
+    3 of a kind: max_val[0] == 3
+    2 pair: max_val[0] && max_val[1] == 2
+    pair: max_val[0] == 2
+    */
+    if vals.len() > 1 {
+        if *vals[0] == 4 {
+            19 as u8
+        } else if *vals[0] == 3 && *vals[1] >= 2 {
+            // could be another 3 cards
+            18 as u8
+        } else if *vals[0] == 3 {
+            15 as u8
+        } else if *vals[0] == 2 && *vals[1] == 2 {
+            14 as u8
+        } else if *vals[0] == 2 {
+            13 as u8
+        } else {
+            0 as u8
         }
     } else {
-        card_one = flop
-            .iter()
-            .filter(|x| x.number == hand.first().unwrap().number)
-            .collect::<Vec<&Card>>()
-            .len();
-        card_two = flop
-            .iter()
-            .filter(|x| x.number == hand.last().unwrap().number)
-            .collect::<Vec<&Card>>()
-            .len();
-        if card_one == 1 || card_two == 1 {
-            return 13;
-        } else if card_one == 1 && card_two == 1 {
-            return 14;
-        } else if card_one == 1 && card_two == 2 {
-            return 18;
-        } else if card_one == 2 && card_two == 1 {
-            return 18;
-        } else if card_one == 2 || card_two == 2 {
-            return 15;
-        } else if card_one == 3 || card_two == 3 {
-            return 19;
+        if *vals[0] == 4 {
+            19 as u8
+        } else if *vals[0] == 3 {
+            15 as u8
+        } else if *vals[0] == 2 {
+            13 as u8
         } else {
-            return 0;
+            0 as u8
         }
     }
 }
