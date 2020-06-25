@@ -2,9 +2,10 @@ mod utils;
 
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use serde::{Serialize, SerializeStruct, Serializer};
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
-
+extern crate js_sys;
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -20,9 +21,19 @@ extern "C" {
 pub fn greet() {
     alert("Hello, poker-game!");
 }
+#[wasm_bindgen]
+pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
+    serde_wasm_bindgen::to_value(&Game::new_game())
+}
+// use js_sys::Array;
+
+// pub fn card_game() -> Array {
+//     Game::new_game().into_iter()
+// }
 // use rand::seq::SliceRandom;
 // use rand::thread_rng;
 
+#[wasm_bindgen]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
 pub enum Suit {
     Heart = 0,
@@ -31,7 +42,7 @@ pub enum Suit {
     Spades = 3,
     Error = 4,
 }
-
+#[wasm_bindgen]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
 pub enum Value {
     Two,
@@ -48,7 +59,7 @@ pub enum Value {
     King,
     Ace,
 }
-
+#[wasm_bindgen]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
 pub struct Card {
     pub suit: Suit,
@@ -64,7 +75,7 @@ pub struct Player {
     pub hand: u8, // value of players hand
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
+#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash, Serialize)]
 pub struct Game {
     pub players: Vec<Player>,
     pub deck: Vec<Card>,
