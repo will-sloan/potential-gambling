@@ -2,7 +2,7 @@ mod utils;
 
 use rand::seq::SliceRandom;
 use rand::thread_rng;
-use serde::{Serialize, SerializeStruct, Serializer};
+use serde::ser::{Serialize, SerializeStruct, Serializer};
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 extern crate js_sys;
@@ -21,10 +21,10 @@ extern "C" {
 pub fn greet() {
     alert("Hello, poker-game!");
 }
-#[wasm_bindgen]
-pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
-    serde_wasm_bindgen::to_value(&Game::new_game())
-}
+// #[wasm_bindgen]
+// pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
+//     serde_wasm_bindgen::to_value(&Game::new_game())
+// }
 // use js_sys::Array;
 
 // pub fn card_game() -> Array {
@@ -32,6 +32,15 @@ pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
 // }
 // use rand::seq::SliceRandom;
 // use rand::thread_rng;
+/*
+
+heart = 0
+club = 1
+diamond = 2
+spades= 3
+error = 4
+
+*/
 
 #[wasm_bindgen]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
@@ -42,6 +51,16 @@ pub enum Suit {
     Spades = 3,
     Error = 4,
 }
+fn suit_as_val(s: &Suit) -> &u8 {
+    match s {
+        Suit::Heart => &0,
+        Suit::Club => &1,
+        Suit::Diamonds => &2,
+        Suit::Spades => &3,
+        Suit::Error => &4,
+    }
+}
+
 #[wasm_bindgen]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
 pub enum Value {
@@ -75,11 +94,11 @@ pub struct Player {
     pub hand: u8, // value of players hand
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash, Serialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
 pub struct Game {
     pub players: Vec<Player>,
     pub deck: Vec<Card>,
-    pub num: u8,
+    //pub num: u8,
     pub pool: u32,
     pub flop: Vec<Card>,
 }
@@ -87,7 +106,45 @@ pub struct Game {
 pub fn shuffle_deck(deck: &mut Vec<Card>) {
     deck.shuffle(&mut thread_rng());
 }
-
+impl Serialize for Game {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("Game", 5)?;
+        s.serialize_field("players", &self.players)?;
+        s.serialize_field("deck", &self.deck)?;
+        //s.serialize_field("num", &self.num)?;
+        s.end()
+    }
+}
+impl Serialize for Player {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("Game", 5)?;
+        s.serialize_field("cards", &self.cards)?;
+        s.serialize_field("chips", &self.chips)?;
+        s.serialize_field("ip", &self.ip)?;
+        s.serialize_field("folded", &self.folded)?;
+        s.serialize_field("hand", &self.hand)?;
+        //s.serialize_field("num", &self.num)?;
+        s.end()
+    }
+}
+impl Serialize for Card {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("Game", 2)?;
+        s.serialize_field("number", &self.number)?;
+        s.serialize_field("suit", suit_as_val(&self.suit))?;
+        //s.serialize_field("num", &self.num)?;
+        s.end()
+    }
+}
 impl Game {
     // used only at the start of the game
     pub fn new_game() -> Game {
