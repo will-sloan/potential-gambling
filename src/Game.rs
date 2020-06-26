@@ -41,7 +41,7 @@ impl Game {
             }
         }
 
-        shuffle_deck(&mut deck);
+        //shuffle_deck(&mut deck);
         Game {
             deck,
             players,

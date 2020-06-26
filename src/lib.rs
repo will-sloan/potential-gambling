@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 
 extern crate js_sys;
 
-//mod Game;
+mod Game;
 
 // use serde::Serialize;
 // #[macro_use]
@@ -37,10 +37,11 @@ error = 4
 
 #[wasm_bindgen]
 pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
-    let g = Game::new_game();
+    let g = Game::Game::new_game();
     serde_wasm_bindgen::to_value(&g).map_err(|err| err.into())
 }
 
+/*
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::collections::HashMap;
@@ -333,112 +334,112 @@ impl Serialize for Game {
     }
 }
 
-// impl<'de> Deserialize<'de> for Game {
-//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-//     where
-//         D: Deserializer<'de>,
-//     {
-//         enum Field {
-//             Players,
-//             Deck,
-//             Pool,
-//             Flop,
-//         };
+impl<'de> Deserialize<'de> for Game {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        enum Field {
+            Players,
+            Deck,
+            Pool,
+            Flop,
+        };
 
-//         impl<'de> Deserialize<'de> for Field {
-//             fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
-//             where
-//                 D: Deserializer<'de>,
-//             {
-//                 struct FieldVisitor;
+        impl<'de> Deserialize<'de> for Field {
+            fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                struct FieldVisitor;
 
-//                 impl<'de> Visitor<'de> for FieldVisitor {
-//                     type Value = Field;
+                impl<'de> Visitor<'de> for FieldVisitor {
+                    type Value = Field;
 
-//                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//                         formatter.write_str("`players` or `deck` or `pool` or `flop`")
-//                     }
+                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                        formatter.write_str("`players` or `deck` or `pool` or `flop`")
+                    }
 
-//                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
-//                     where
-//                         E: de::Error,
-//                     {
-//                         match value {
-//                             "players" => Ok(Field::Players),
-//                             "deck" => Ok(Field::Deck),
-//                             "pool" => Ok(Field::Pool),
-//                             "flop" => Ok(Field::Flop),
-//                             _ => Err(de::Error::unknown_field(value, FIELDS)),
-//                         }
-//                     }
-//                 }
+                    fn visit_str<E>(self, value: &str) -> Result<Field, E>
+                    where
+                        E: de::Error,
+                    {
+                        match value {
+                            "players" => Ok(Field::Players),
+                            "deck" => Ok(Field::Deck),
+                            "pool" => Ok(Field::Pool),
+                            "flop" => Ok(Field::Flop),
+                            _ => Err(de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
 
-//                 deserializer.deserialize_identifier(FieldVisitor)
-//             }
-//         }
+                deserializer.deserialize_identifier(FieldVisitor)
+            }
+        }
 
-//         struct DurationVisitor;
+        struct DurationVisitor;
 
-//         impl<'de> Visitor<'de> for DurationVisitor {
-//             type Value = Game;
+        impl<'de> Visitor<'de> for DurationVisitor {
+            type Value = Game;
 
-//             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//                 formatter.write_str("struct Duration")
-//             }
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct Duration")
+            }
 
-//             fn visit_map<V>(self, mut map: V) -> Result<Game, V::Error>
-//             where
-//                 V: MapAccess<'de>,
-//             {
-//                 let mut players = None;
-//                 let mut deck = None;
-//                 let mut pool = None;
-//                 let mut flop = None;
-//                 while let Some(key) = map.next_key()? {
-//                     match key {
-//                         Field::Players => {
-//                             if players.is_some() {
-//                                 return Err(de::Error::duplicate_field("players"));
-//                             }
-//                             players = Some(map.next_value()?);
-//                         }
-//                         Field::Deck => {
-//                             if deck.is_some() {
-//                                 return Err(de::Error::duplicate_field("deck"));
-//                             }
-//                             deck = Some(map.next_value()?);
-//                         }
-//                         Field::Pool => {
-//                             if pool.is_some() {
-//                                 return Err(de::Error::duplicate_field("pool"));
-//                             }
-//                             pool = Some(map.next_value()?);
-//                         }
-//                         Field::Flop => {
-//                             if flop.is_some() {
-//                                 return Err(de::Error::duplicate_field("flop"));
-//                             }
-//                             flop = Some(map.next_value()?);
-//                         }
-//                     }
-//                 }
-//                 let players = players.ok_or_else(|| de::Error::missing_field("players"))?;
-//                 let deck = deck.ok_or_else(|| de::Error::missing_field("deck"))?;
-//                 let pool = pool.ok_or_else(|| de::Error::missing_field("pool"))?;
-//                 let flop = flop.ok_or_else(|| de::Error::missing_field("flop"))?;
-//                 Ok(Game {
-//                     players,
-//                     deck,
-//                     pool,
-//                     flop,
-//                 })
-//             }
-//         }
+            fn visit_map<V>(self, mut map: V) -> Result<Game, V::Error>
+            where
+                V: MapAccess<'de>,
+            {
+                let mut players = None;
+                let mut deck = None;
+                let mut pool = None;
+                let mut flop = None;
+                while let Some(key) = map.next_key()? {
+                    match key {
+                        Field::Players => {
+                            if players.is_some() {
+                                return Err(de::Error::duplicate_field("players"));
+                            }
+                            players = Some(map.next_value()?);
+                        }
+                        Field::Deck => {
+                            if deck.is_some() {
+                                return Err(de::Error::duplicate_field("deck"));
+                            }
+                            deck = Some(map.next_value()?);
+                        }
+                        Field::Pool => {
+                            if pool.is_some() {
+                                return Err(de::Error::duplicate_field("pool"));
+                            }
+                            pool = Some(map.next_value()?);
+                        }
+                        Field::Flop => {
+                            if flop.is_some() {
+                                return Err(de::Error::duplicate_field("flop"));
+                            }
+                            flop = Some(map.next_value()?);
+                        }
+                    }
+                }
+                let players = players.ok_or_else(|| de::Error::missing_field("players"))?;
+                let deck = deck.ok_or_else(|| de::Error::missing_field("deck"))?;
+                let pool = pool.ok_or_else(|| de::Error::missing_field("pool"))?;
+                let flop = flop.ok_or_else(|| de::Error::missing_field("flop"))?;
+                Ok(Game {
+                    players,
+                    deck,
+                    pool,
+                    flop,
+                })
+            }
+        }
 
-//         const FIELDS: &'static [&'static str] = &["players", "deck", "pool", "flop"];
-//         deserializer.deserialize_struct("Game", FIELDS, DurationVisitor)
-//     }
-// }
+        const FIELDS: &'static [&'static str] = &["players", "deck", "pool", "flop"];
+        deserializer.deserialize_struct("Game", FIELDS, DurationVisitor)
+    }
+}
 
 /*
 
@@ -469,87 +470,87 @@ impl Serialize for Card {
         s.end()
     }
 }
-// impl<'de> Deserialize<'de> for Card {
-//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-//     where
-//         D: Deserializer<'de>,
-//     {
-//         enum Field {
-//             Suit,
-//             Number,
-//         };
+impl<'de> Deserialize<'de> for Card {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        enum Field {
+            Suit,
+            Number,
+        };
 
-//         impl<'de> Deserialize<'de> for Field {
-//             fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
-//             where
-//                 D: Deserializer<'de>,
-//             {
-//                 struct FieldVisitor;
+        impl<'de> Deserialize<'de> for Field {
+            fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                struct FieldVisitor;
 
-//                 impl<'de> Visitor<'de> for FieldVisitor {
-//                     type Value = Field;
+                impl<'de> Visitor<'de> for FieldVisitor {
+                    type Value = Field;
 
-//                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//                         formatter.write_str("`suit` or `number`")
-//                     }
+                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                        formatter.write_str("`suit` or `number`")
+                    }
 
-//                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
-//                     where
-//                         E: de::Error,
-//                     {
-//                         match value {
-//                             "suit" => Ok(Field::Suit),
-//                             "number" => Ok(Field::Number),
-//                             _ => Err(de::Error::unknown_field(value, FIELDS)),
-//                         }
-//                     }
-//                 }
+                    fn visit_str<E>(self, value: &str) -> Result<Field, E>
+                    where
+                        E: de::Error,
+                    {
+                        match value {
+                            "suit" => Ok(Field::Suit),
+                            "number" => Ok(Field::Number),
+                            _ => Err(de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
 
-//                 deserializer.deserialize_identifier(FieldVisitor)
-//             }
-//         }
+                deserializer.deserialize_identifier(FieldVisitor)
+            }
+        }
 
-//         struct DurationVisitor;
+        struct DurationVisitor;
 
-//         impl<'de> Visitor<'de> for DurationVisitor {
-//             type Value = Card;
+        impl<'de> Visitor<'de> for DurationVisitor {
+            type Value = Card;
 
-//             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//                 formatter.write_str("struct Duration")
-//             }
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct Duration")
+            }
 
-//             fn visit_map<V>(self, mut map: V) -> Result<Card, V::Error>
-//             where
-//                 V: MapAccess<'de>,
-//             {
-//                 let mut suit = None;
-//                 let mut number = None;
-//                 while let Some(key) = map.next_key()? {
-//                     match key {
-//                         Field::Suit => {
-//                             if suit.is_some() {
-//                                 return Err(de::Error::duplicate_field("suit"));
-//                             }
-//                             suit = Some(map.next_value()?);
-//                         }
-//                         Field::Number => {
-//                             if number.is_some() {
-//                                 return Err(de::Error::duplicate_field("number"));
-//                             }
-//                             number = Some(map.next_value()?);
-//                         }
-//                     }
-//                 }
-//                 let suit = suit.ok_or_else(|| de::Error::missing_field("suit"))?;
-//                 let number = number.ok_or_else(|| de::Error::missing_field("number"))?;
-//                 Ok(Card { suit, number })
-//             }
-//         }
+            fn visit_map<V>(self, mut map: V) -> Result<Card, V::Error>
+            where
+                V: MapAccess<'de>,
+            {
+                let mut suit = None;
+                let mut number = None;
+                while let Some(key) = map.next_key()? {
+                    match key {
+                        Field::Suit => {
+                            if suit.is_some() {
+                                return Err(de::Error::duplicate_field("suit"));
+                            }
+                            suit = Some(map.next_value()?);
+                        }
+                        Field::Number => {
+                            if number.is_some() {
+                                return Err(de::Error::duplicate_field("number"));
+                            }
+                            number = Some(map.next_value()?);
+                        }
+                    }
+                }
+                let suit = suit.ok_or_else(|| de::Error::missing_field("suit"))?;
+                let number = number.ok_or_else(|| de::Error::missing_field("number"))?;
+                Ok(Card { suit, number })
+            }
+        }
 
-//         const FIELDS: &'static [&'static str] = &["suit", "number"];
-//         deserializer.deserialize_struct("Card", FIELDS, DurationVisitor)
-//     }
-// }
+        const FIELDS: &'static [&'static str] = &["suit", "number"];
+        deserializer.deserialize_struct("Card", FIELDS, DurationVisitor)
+    }
+}
 /*
 
 
@@ -586,120 +587,121 @@ impl Serialize for Player {
     }
 }
 
-// impl<'de> Deserialize<'de> for Player {
-//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-//     where
-//         D: Deserializer<'de>,
-//     {
-//         enum Field {
-//             Cards,
-//             Chips,
-//             Ip,
-//             Folded,
-//             Hand,
-//         };
+impl<'de> Deserialize<'de> for Player {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        enum Field {
+            Cards,
+            Chips,
+            Ip,
+            Folded,
+            Hand,
+        };
 
-//         impl<'de> Deserialize<'de> for Field {
-//             fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
-//             where
-//                 D: Deserializer<'de>,
-//             {
-//                 struct FieldVisitor;
+        impl<'de> Deserialize<'de> for Field {
+            fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                struct FieldVisitor;
 
-//                 impl<'de> Visitor<'de> for FieldVisitor {
-//                     type Value = Field;
+                impl<'de> Visitor<'de> for FieldVisitor {
+                    type Value = Field;
 
-//                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//                         formatter.write_str("`cards` or `chips` or `ip` or `folded` or `hand`")
-//                     }
+                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                        formatter.write_str("`cards` or `chips` or `ip` or `folded` or `hand`")
+                    }
 
-//                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
-//                     where
-//                         E: de::Error,
-//                     {
-//                         match value {
-//                             "cards" => Ok(Field::Cards),
-//                             "chips" => Ok(Field::Chips),
-//                             "ip" => Ok(Field::Ip),
-//                             "folded" => Ok(Field::Folded),
-//                             "hand" => Ok(Field::Hand),
-//                             _ => Err(de::Error::unknown_field(value, FIELDS)),
-//                         }
-//                     }
-//                 }
+                    fn visit_str<E>(self, value: &str) -> Result<Field, E>
+                    where
+                        E: de::Error,
+                    {
+                        match value {
+                            "cards" => Ok(Field::Cards),
+                            "chips" => Ok(Field::Chips),
+                            "ip" => Ok(Field::Ip),
+                            "folded" => Ok(Field::Folded),
+                            "hand" => Ok(Field::Hand),
+                            _ => Err(de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
 
-//                 deserializer.deserialize_identifier(FieldVisitor)
-//             }
-//         }
+                deserializer.deserialize_identifier(FieldVisitor)
+            }
+        }
 
-//         struct DurationVisitor;
+        struct DurationVisitor;
 
-//         impl<'de> Visitor<'de> for DurationVisitor {
-//             type Value = Player;
+        impl<'de> Visitor<'de> for DurationVisitor {
+            type Value = Player;
 
-//             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-//                 formatter.write_str("struct Duration")
-//             }
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct Duration")
+            }
 
-//             fn visit_map<V>(self, mut map: V) -> Result<Player, V::Error>
-//             where
-//                 V: MapAccess<'de>,
-//             {
-//                 let mut cards = None;
-//                 let mut chips = None;
-//                 let mut ip = None;
-//                 let mut folded = None;
-//                 let mut hand = None;
-//                 while let Some(key) = map.next_key()? {
-//                     match key {
-//                         Field::Cards => {
-//                             if cards.is_some() {
-//                                 return Err(de::Error::duplicate_field("cards"));
-//                             }
-//                             cards = Some(map.next_value()?);
-//                         }
-//                         Field::Chips => {
-//                             if chips.is_some() {
-//                                 return Err(de::Error::duplicate_field("chips"));
-//                             }
-//                             chips = Some(map.next_value()?);
-//                         }
-//                         Field::Ip => {
-//                             if ip.is_some() {
-//                                 return Err(de::Error::duplicate_field("pool"));
-//                             }
-//                             ip = Some(map.next_value()?);
-//                         }
-//                         Field::Folded => {
-//                             if folded.is_some() {
-//                                 return Err(de::Error::duplicate_field("folded"));
-//                             }
-//                             folded = Some(map.next_value()?);
-//                         }
-//                         Field::Hand => {
-//                             if hand.is_some() {
-//                                 return Err(de::Error::duplicate_field("hand"));
-//                             }
-//                             hand = Some(map.next_value()?);
-//                         }
-//                     }
-//                 }
-//                 let cards = cards.ok_or_else(|| de::Error::missing_field("cards"))?;
-//                 let chips = chips.ok_or_else(|| de::Error::missing_field("chips"))?;
-//                 let ip = ip.ok_or_else(|| de::Error::missing_field("ip"))?;
-//                 let folded = folded.ok_or_else(|| de::Error::missing_field("folded"))?;
-//                 let hand = hand.ok_or_else(|| de::Error::missing_field("hand"))?;
-//                 Ok(Player {
-//                     cards,
-//                     chips,
-//                     ip,
-//                     folded,
-//                     hand,
-//                 })
-//             }
-//         }
+            fn visit_map<V>(self, mut map: V) -> Result<Player, V::Error>
+            where
+                V: MapAccess<'de>,
+            {
+                let mut cards = None;
+                let mut chips = None;
+                let mut ip = None;
+                let mut folded = None;
+                let mut hand = None;
+                while let Some(key) = map.next_key()? {
+                    match key {
+                        Field::Cards => {
+                            if cards.is_some() {
+                                return Err(de::Error::duplicate_field("cards"));
+                            }
+                            cards = Some(map.next_value()?);
+                        }
+                        Field::Chips => {
+                            if chips.is_some() {
+                                return Err(de::Error::duplicate_field("chips"));
+                            }
+                            chips = Some(map.next_value()?);
+                        }
+                        Field::Ip => {
+                            if ip.is_some() {
+                                return Err(de::Error::duplicate_field("pool"));
+                            }
+                            ip = Some(map.next_value()?);
+                        }
+                        Field::Folded => {
+                            if folded.is_some() {
+                                return Err(de::Error::duplicate_field("folded"));
+                            }
+                            folded = Some(map.next_value()?);
+                        }
+                        Field::Hand => {
+                            if hand.is_some() {
+                                return Err(de::Error::duplicate_field("hand"));
+                            }
+                            hand = Some(map.next_value()?);
+                        }
+                    }
+                }
+                let cards = cards.ok_or_else(|| de::Error::missing_field("cards"))?;
+                let chips = chips.ok_or_else(|| de::Error::missing_field("chips"))?;
+                let ip = ip.ok_or_else(|| de::Error::missing_field("ip"))?;
+                let folded = folded.ok_or_else(|| de::Error::missing_field("folded"))?;
+                let hand = hand.ok_or_else(|| de::Error::missing_field("hand"))?;
+                Ok(Player {
+                    cards,
+                    chips,
+                    ip,
+                    folded,
+                    hand,
+                })
+            }
+        }
 
-//         const FIELDS: &'static [&'static str] = &["cards", "chips", "pool", "folded"];
-//         deserializer.deserialize_struct("Player", FIELDS, DurationVisitor)
-//     }
-// }
+        const FIELDS: &'static [&'static str] = &["cards", "chips", "pool", "folded"];
+        deserializer.deserialize_struct("Player", FIELDS, DurationVisitor)
+    }
+}
+*/
