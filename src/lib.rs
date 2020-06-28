@@ -41,6 +41,23 @@ pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&g).map_err(|err| err.into())
 }
 
+#[wasm_bindgen]
+pub fn add_player_from_js(value: JsValue) -> Result<JsValue, JsValue> {
+    let mut value: Game::Game = serde_wasm_bindgen::from_value(value)?;
+    let p: Game::Player = Game::Player {
+        cards: Vec::new(),
+        chips: 500,
+        ip: "localhost".to_string(),
+        folded: false,
+        hand: 0,
+    };
+    value.players.push(p);
+    serde_wasm_bindgen::to_value(&value).map_err(|err| err.into())
+}
+
+pub fn one_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
+    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+}
 /*
 use rand::seq::SliceRandom;
 use rand::thread_rng;
