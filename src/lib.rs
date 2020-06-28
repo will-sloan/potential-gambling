@@ -4,9 +4,10 @@ use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use std::fmt;
 use wasm_bindgen::prelude::*;
+//use web_sys::console;
 
 extern crate js_sys;
-
+extern crate web_sys;
 mod Game;
 
 // use serde::Serialize;
@@ -25,7 +26,8 @@ extern "C" {
 
 #[wasm_bindgen]
 pub fn greet() {
-    alert("Hello, poker-game!");
+    // alert("Hello, poker-game!");
+    web_sys::console::log_1(&"Hello".into());
 }
 
 /*
