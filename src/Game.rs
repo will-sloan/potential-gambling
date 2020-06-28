@@ -623,7 +623,7 @@ impl<'de> Deserialize<'de> for Player {
                         }
                         Field::Ip => {
                             if ip.is_some() {
-                                return Err(de::Error::duplicate_field("pool"));
+                                return Err(de::Error::duplicate_field("ip"));
                             }
                             ip = Some(map.next_value()?);
                         }
@@ -656,7 +656,7 @@ impl<'de> Deserialize<'de> for Player {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["cards", "chips", "pool", "folded"];
+        const FIELDS: &'static [&'static str] = &["cards", "chips", "ip", "folded", "hand"];
         deserializer.deserialize_struct("Player", FIELDS, DurationVisitor)
     }
 }

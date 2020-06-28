@@ -1,5 +1,8 @@
 mod utils;
 
+use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
+use serde::ser::{Serialize, SerializeStruct, Serializer};
+use std::fmt;
 use wasm_bindgen::prelude::*;
 
 extern crate js_sys;
@@ -35,29 +38,205 @@ error = 4
 
 */
 
+// #[wasm_bindgen]
+// pub fn new_game() -> Result<JsValue, JsValue> {
+//     let g = Game::Game::new_game();
+//     serde_wasm_bindgen::to_value(&g).map_err(|err| err.into())
+// }
+
 #[wasm_bindgen]
-pub fn pass_value_to_js() -> Result<JsValue, JsValue> {
-    let g = Game::Game::new_game();
+pub fn start_game_from_js(num_p: JsValue) -> Result<JsValue, JsValue> {
+    let mut g = Game::Game::new_game();
+    //let mut value: Game::Game = serde_wasm_bindgen::from_value(g)?;
+    let num_p: i32 = serde_wasm_bindgen::from_value(num_p)?;
+    for i in 0..num_p {
+        let p: Game::Player = Game::Player {
+            cards: Vec::new(),
+            chips: 500,
+            ip: format!("player{}", i + 1),
+            folded: false,
+            hand: 0,
+        };
+        g.players.push(p);
+    }
+    g.deal_to_players();
+
     serde_wasm_bindgen::to_value(&g).map_err(|err| err.into())
+}
+#[wasm_bindgen]
+pub fn first_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
+    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+    // game.do_flop();
+    serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
 }
 
 #[wasm_bindgen]
-pub fn add_player_from_js(value: JsValue) -> Result<JsValue, JsValue> {
-    let mut value: Game::Game = serde_wasm_bindgen::from_value(value)?;
-    let p: Game::Player = Game::Player {
-        cards: Vec::new(),
-        chips: 500,
-        ip: "localhost".to_string(),
-        folded: false,
-        hand: 0,
+pub fn person_to_js() -> Result<JsValue, JsValue> {
+    //serde_wasm_bindgen::Error
+    let p = Person {
+        name: String::from("Hello"),
+        age: 13,
+        phones: vec![
+            String::from("phone"),
+            String::from("AAAAA"),
+            String::from("Guacamole"),
+        ],
     };
-    value.players.push(p);
+    serde_wasm_bindgen::to_value(&p).map_err(|err| err.into())
+}
+
+#[wasm_bindgen]
+pub fn increment_num(value: JsValue) -> Result<JsValue, JsValue> {
+    let mut value: Person = serde_wasm_bindgen::from_value(value)?;
+    value.age += 1;
     serde_wasm_bindgen::to_value(&value).map_err(|err| err.into())
 }
 
-pub fn one_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
-    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+#[wasm_bindgen]
+pub fn basically_new_person(value: JsValue) -> Result<JsValue, JsValue> {
+    let mut value: Person = serde_wasm_bindgen::from_value(value)?;
+    value
+        .phones
+        .append(&mut vec!["Iphone8".to_string(), "Samsung TV".to_string()]);
+    value.age = 45;
+    value.name = "Phone collect 69".to_string();
+    serde_wasm_bindgen::to_value(&value).map_err(|err| err.into())
 }
+
+struct Person {
+    name: String,
+    age: u8,
+    phones: Vec<String>,
+}
+
+// This is what #[derive(Serialize)] would generate.
+impl Serialize for Person {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("Person", 3)?;
+        s.serialize_field("name", &self.name)?;
+        s.serialize_field("age", &self.age)?;
+        s.serialize_field("phones", &self.phones)?;
+        s.end()
+    }
+}
+
+impl<'de> Deserialize<'de> for Person {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        enum Field {
+            Name,
+            Age,
+            Phones,
+        };
+
+        // This part could also be generated independently by:
+        //
+        //    #[derive(Deserialize)]
+        //    #[serde(field_identifier, rename_all = "lowercase")]
+        //    enum Field { Secs, Nanos }
+        impl<'de> Deserialize<'de> for Field {
+            fn deserialize<D>(deserializer: D) -> Result<Field, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                struct FieldVisitor;
+
+                impl<'de> Visitor<'de> for FieldVisitor {
+                    type Value = Field;
+
+                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                        formatter.write_str("`name` or `age` or `phones`")
+                    }
+
+                    fn visit_str<E>(self, value: &str) -> Result<Field, E>
+                    where
+                        E: de::Error,
+                    {
+                        match value {
+                            "name" => Ok(Field::Name),
+                            "age" => Ok(Field::Age),
+                            "phones" => Ok(Field::Phones),
+                            _ => Err(de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+
+                deserializer.deserialize_identifier(FieldVisitor)
+            }
+        }
+
+        struct DurationVisitor;
+
+        impl<'de> Visitor<'de> for DurationVisitor {
+            type Value = Person;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct Duration")
+            }
+
+            // fn visit_seq<V>(self, mut seq: V) -> Result<Person, V::Error>
+            // where
+            //     V: SeqAccess<'de>,
+            // {
+            //     let name = seq
+            //         .next_element()?
+            //         .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+            //     let age = seq
+            //         .next_element()?
+            //         .ok_or_else(|| de::Error::invalid_length(1, &self))?;
+            //     let phones = seq
+            //         .next_element()?
+            //         .ok_or_else(|| de::Error::invalid_length(2, &self))?;
+            //     Ok(Person { name, age, phones })
+            // }
+
+            fn visit_map<V>(self, mut map: V) -> Result<Person, V::Error>
+            where
+                V: MapAccess<'de>,
+            {
+                let mut name = None;
+                let mut age = None;
+                let mut phones = None;
+                while let Some(key) = map.next_key()? {
+                    match key {
+                        Field::Name => {
+                            if name.is_some() {
+                                return Err(de::Error::duplicate_field("name"));
+                            }
+                            name = Some(map.next_value()?);
+                        }
+                        Field::Age => {
+                            if age.is_some() {
+                                return Err(de::Error::duplicate_field("age"));
+                            }
+                            age = Some(map.next_value()?);
+                        }
+                        Field::Phones => {
+                            if phones.is_some() {
+                                return Err(de::Error::duplicate_field("phones"));
+                            }
+                            phones = Some(map.next_value()?);
+                        }
+                    }
+                }
+                let name = name.ok_or_else(|| de::Error::missing_field("name"))?;
+                let age = age.ok_or_else(|| de::Error::missing_field("age"))?;
+                let phones = phones.ok_or_else(|| de::Error::missing_field("phones"))?;
+                Ok(Person { name, age, phones })
+            }
+        }
+
+        const FIELDS: &'static [&'static str] = &["name", "age", "phones"];
+        deserializer.deserialize_struct("Person", FIELDS, DurationVisitor)
+    }
+}
+//use std::io::Error;
+
 /*
 use rand::seq::SliceRandom;
 use rand::thread_rng;

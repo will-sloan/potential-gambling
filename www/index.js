@@ -39,14 +39,25 @@ const c_height = canvas.height;
 const c_width = canvas.width;
 var ctx = canvas.getContext('2d');
 drawMainTable(ctx, c_height, c_width);
+var number_of_player = 6;
+// var a = wasm.new_game();
 
-var a = wasm.pass_value_to_js();
+// console.log(a);
+
+var a = wasm.start_game_from_js(number_of_player);
+//a = wasm.add_player_from_js(a);
 
 console.log(a);
 
-a = wasm.add_player_from_js(a);
+a = wasm.first_round_from_js(a);
 
 console.log(a);
 
+// var b = wasm.person_to_js();
+// console.log(b);
+// b = wasm.increment_num(b);
 
+// console.log(b);
+// b = wasm.basically_new_person(b);
+// console.log(b)
 
