@@ -33,7 +33,36 @@ function drawMainTable(ctx, x1, y1, x2, y2, r) {
     ctx.fillStyle = "rgba(0,100,0,0.5)";
     ctx.fill();
     //ctx.stroke();
+}
 
+function draw_next_button(height, width) {
+    var buttonX = 70;
+    var buttonY = 80;
+    var buttonW = 60;
+    var buttonH = 30;
+    // Render button
+    ctx.fillStyle = 'red';
+    ctx.fillRect(buttonX, buttonY, buttonW, buttonH);
+    canvas.addEventListener('click', function (event) {
+        // Control that click event occurred within position of button
+        // NOTE: This assumes canvas is positioned at top left corner
+        // Not fucking sure how it works
+        //console.log(event.x);
+        //console.log(event.y);
+        const rect = canvas.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        //console.log("x: " + x + " y: " + y)
+        if (
+            x > buttonX &&
+            x < buttonX + buttonW &&
+            y > buttonY &&
+            y < buttonY + buttonH
+        ) {
+            // Executes if button was clicked!
+            alert('Button was clicked!');
+        }
+    });
 }
 const card_height = 125;
 const card_width = 75;
@@ -45,10 +74,6 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // ctx.arc(x1 + x2 / 3, y1, 4, 0, Math.PI * 2);
     // ctx.stroke();
 
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
-    ctx.fillText(game["players"][0]["hand"], x1 + x2 / 3 - card_width / 2, y1 - 15);
 
     var p1_c1 = new Image();
     p1_c1.onload = function () {
@@ -72,10 +97,6 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // ctx.arc(x1 + x2 * 2 / 3, y1, 4, 0, Math.PI * 2);
     // ctx.stroke();
 
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
-    ctx.fillText(game["players"][1]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
 
     var p2_c1 = new Image();
     p2_c1.onload = function () {
@@ -98,10 +119,7 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // ctx.beginPath();
     // ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
     // ctx.stroke();
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
-    ctx.fillText(game["players"][2]["hand"], x2 + x1, y2 / 2 + y1 + 30);
+
     var p3_c1 = new Image();
     p3_c1.onload = function () {
         //ctx.rotate();
@@ -124,10 +142,7 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // // Loc of Player 4 or the bottomish right
     // ctx.arc(x1 + x2 * 2 / 3, y1 + y2, 4, 0, Math.PI * 2);
     // ctx.stroke();
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
-    ctx.fillText(game["players"][3]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+
     var p4_c1 = new Image();
     p4_c1.onload = function () {
         //ctx.rotate();
@@ -146,14 +161,11 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
 
 
     // Bottom two
-    ctx.beginPath();
-    // Loc of Player 5 or the bottomish left
-    ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
-    ctx.fillText(game["players"][4]["hand"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    // ctx.beginPath();
+    // // Loc of Player 5 or the bottomish left
+    // ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
+    // ctx.stroke();
+
     var p5_c1 = new Image();
     p5_c1.onload = function () {
         //ctx.rotate();
@@ -183,10 +195,6 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // ctx.fillText('Player 6', 0, 0);
     // ctx.restore();
 
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
-    ctx.fillText(game["players"][5]["hand"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
     var p6_c1 = new Image();
     p6_c1.onload = function () {
         //ctx.rotate();
@@ -213,7 +221,41 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // console.log(game["players"][0]["cards"][0]["link"]);
 
     // p6_c1.src = game["players"][0]["cards"][0]["link"];
+}
 
+function draw_names_and_scores(game, ctx, x1, y1, x2, y2, r) {
+    // player 1
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
+    ctx.fillText(game["players"][0]["hand"], x1 + x2 / 3 - card_width / 2, y1 - 15);
+    // player 2
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
+    ctx.fillText(game["players"][1]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
+
+    // player 3
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
+    ctx.fillText(game["players"][2]["hand"], x2 + x1, y2 / 2 + y1 + 30);
+    // player 4
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
+    ctx.fillText(game["players"][3]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    // player 5
+    ctx.stroke();
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
+    ctx.fillText(game["players"][4]["hand"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    // player 6
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
+    ctx.fillText(game["players"][5]["hand"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
 }
 
 function draw_flop(game, ctx, x1, y1, x2, y2, r) {
@@ -262,20 +304,28 @@ var x2 = c_width * 0.7;
 var y2 = c_height * 0.7;
 var r = 125;
 var ctx = canvas.getContext('2d');
-drawMainTable(ctx, x1, y1, x2, y2, r);
+
 var number_of_player = 6;
 // var a = wasm.new_game();
-
-// console.log(a);
+// var window_height = $(window).height();
+// var window_width = $(window).width();
+// console.log(window_height);
+// console.log(window_width);
 
 var a = wasm.start_game_from_js(number_of_player);
 //a = wasm.add_player_from_js(a);
+drawMainTable(ctx, x1, y1, x2, y2, r);
 draw_cards(a, ctx, x1, y1, x2, y2, r);
+draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
 
 console.log(a);
-
+ctx.clearRect(0, 0, c_width, c_height);
 a = wasm.flop_round_from_js(a);
-//draw_flop(a, ctx, x1, y1, x2, y2, r);
+drawMainTable(ctx, x1, y1, x2, y2, r);
+draw_cards(a, ctx, x1, y1, x2, y2, r);
+draw_flop(a, ctx, x1, y1, x2, y2, r);
+draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+draw_next_button();
 console.log(a);
 
 a = wasm.other_rounds_from_js(a);
