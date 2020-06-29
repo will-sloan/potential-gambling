@@ -40,10 +40,15 @@ const card_width = 75;
 const p6andp3_similar_offset = 15;
 function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // Top Two
-    ctx.beginPath();
-    // Loc of Player 1 or the topish left
-    ctx.arc(x1 + x2 / 3, y1, 4, 0, Math.PI * 2);
-    ctx.stroke();
+    // ctx.beginPath();
+    // // Loc of Player 1 or the topish left
+    // ctx.arc(x1 + x2 / 3, y1, 4, 0, Math.PI * 2);
+    // ctx.stroke();
+
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
+    ctx.fillText(game["players"][0]["hand"], x1 + x2 / 3 - card_width / 2, y1 - 15);
 
     var p1_c1 = new Image();
     p1_c1.onload = function () {
@@ -62,10 +67,15 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
 
 
 
-    ctx.beginPath();
-    // Loc of Player 2 or the topish right
-    ctx.arc(x1 + x2 * 2 / 3, y1, 4, 0, Math.PI * 2);
-    ctx.stroke();
+    // ctx.beginPath();
+    // // Loc of Player 2 or the topish right
+    // ctx.arc(x1 + x2 * 2 / 3, y1, 4, 0, Math.PI * 2);
+    // ctx.stroke();
+
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
+    ctx.fillText(game["players"][1]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
 
     var p2_c1 = new Image();
     p2_c1.onload = function () {
@@ -85,10 +95,13 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
 
 
     // Loc of Player 3 or the right side
-    ctx.beginPath();
-    ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
-    ctx.stroke();
-
+    // ctx.beginPath();
+    // ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    // ctx.stroke();
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
+    ctx.fillText(game["players"][2]["hand"], x2 + x1, y2 / 2 + y1 + 30);
     var p3_c1 = new Image();
     p3_c1.onload = function () {
         //ctx.rotate();
@@ -107,11 +120,14 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     p3_c2.src = game["players"][2]["cards"][1]["link"];
 
 
-    ctx.beginPath();
-    // Loc of Player 4 or the bottomish right
-    ctx.arc(x1 + x2 * 2 / 3, y1 + y2, 4, 0, Math.PI * 2);
-    ctx.stroke();
-
+    // ctx.beginPath();
+    // // Loc of Player 4 or the bottomish right
+    // ctx.arc(x1 + x2 * 2 / 3, y1 + y2, 4, 0, Math.PI * 2);
+    // ctx.stroke();
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
+    ctx.fillText(game["players"][3]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
     var p4_c1 = new Image();
     p4_c1.onload = function () {
         //ctx.rotate();
@@ -134,6 +150,10 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // Loc of Player 5 or the bottomish left
     ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
     ctx.stroke();
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
+    ctx.fillText(game["players"][4]["hand"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
     var p5_c1 = new Image();
     p5_c1.onload = function () {
         //ctx.rotate();
@@ -151,10 +171,10 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     p5_c2.src = game["players"][4]["cards"][1]["link"];
 
 
-    ctx.beginPath();
-    // Loc of Player 6 or the player of left side
-    ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
-    ctx.stroke();
+    // ctx.beginPath();
+    // // Loc of Player 6 or the player of left side
+    // ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    // ctx.stroke();
     // ctx.clearRect(x1, y1, 50, 50);
     // ctx.save();
     // ctx.translate(x1 - 45, y2 / 2 + y1 - 60);
@@ -163,9 +183,10 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // ctx.fillText('Player 6', 0, 0);
     // ctx.restore();
 
-    ctx.font = '36px serif';
+    ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
-
+    ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
+    ctx.fillText(game["players"][5]["hand"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
     var p6_c1 = new Image();
     p6_c1.onload = function () {
         //ctx.rotate();
