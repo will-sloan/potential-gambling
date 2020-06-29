@@ -17,7 +17,7 @@ function drawMainTable(ctx, x1, y1, x2, y2, r) {
     ctx.quadraticCurveTo(x2 + x1, y1, x2 + x1, y1 + r);
     // draw from where the curve finished, line straight down until next curve should start
     //ctx.moveTo(x2 + x1, y1 + r);
-    ctx.lineTo(x2 + x1, y2 - r);
+    ctx.lineTo(x2 + x1, y1 + y2 - r);
 
     // first two arguments is the bottom right corner of the rectangle and the next two is where the curve should end
     // ctx.quadraticCurveTo(x2 + x1, y2 + y1, x2 + x1 - r, y1 + y2);
@@ -37,6 +37,7 @@ function drawMainTable(ctx, x1, y1, x2, y2, r) {
 }
 const card_height = 125;
 const card_width = 75;
+const p6andp3_similar_offset = 15;
 function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // Top Two
     ctx.beginPath();
@@ -92,7 +93,7 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     p3_c1.onload = function () {
         //ctx.rotate();
         // 90 instead of 75 so they are completely on board
-        ctx.drawImage(p3_c1, x2 + x1 - 90, y2 / 2 + y1, card_width, card_height);
+        ctx.drawImage(p3_c1, x2 + x1 - p6andp3_similar_offset - 75, y2 / 2 + y1, card_width, card_height);
     }
 
     p3_c1.src = game["players"][2]["cards"][0]["link"];
@@ -100,35 +101,10 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     var p3_c2 = new Image();
     p3_c2.onload = function () {
         //ctx.rotate();
-        ctx.drawImage(p3_c2, x2 + x1 - 90, y2 / 2 + y1 - card_height, card_width, card_height);
+        ctx.drawImage(p3_c2, x2 + x1 - p6andp3_similar_offset - 75, y2 / 2 + y1 - card_height, card_width, card_height);
     }
 
     p3_c2.src = game["players"][2]["cards"][1]["link"];
-
-
-
-
-    // Bottom two
-    ctx.beginPath();
-    // Loc of Player 5 or the bottomish left
-    ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
-    ctx.stroke();
-    var p5_c1 = new Image();
-    p5_c1.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p5_c1, x1 + x2 / 3, y1 + y2 - card_height, card_width, card_height);
-    }
-
-    p5_c1.src = game["players"][4]["cards"][0]["link"];
-
-    var p5_c2 = new Image();
-    p5_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p5_c2, x1 + x2 / 3 - card_width, y1 + y2 - card_height, card_width, card_height);
-    }
-
-    p5_c2.src = game["players"][4]["cards"][1]["link"];
-
 
 
     ctx.beginPath();
@@ -153,6 +129,27 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     p4_c2.src = game["players"][3]["cards"][1]["link"];
 
 
+    // Bottom two
+    ctx.beginPath();
+    // Loc of Player 5 or the bottomish left
+    ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    var p5_c1 = new Image();
+    p5_c1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p5_c1, x1 + x2 / 3, y1 + y2 - card_height, card_width, card_height);
+    }
+
+    p5_c1.src = game["players"][4]["cards"][0]["link"];
+
+    var p5_c2 = new Image();
+    p5_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p5_c2, x1 + x2 / 3 - card_width, y1 + y2 - card_height, card_width, card_height);
+    }
+
+    p5_c2.src = game["players"][4]["cards"][1]["link"];
+
 
     ctx.beginPath();
     // Loc of Player 6 or the player of left side
@@ -172,7 +169,7 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     var p6_c1 = new Image();
     p6_c1.onload = function () {
         //ctx.rotate();
-        ctx.drawImage(p6_c1, x1 + 10, y2 / 2 + y1, card_width, card_height);
+        ctx.drawImage(p6_c1, x1 + p6andp3_similar_offset, y2 / 2 + y1, card_width, card_height);
     }
 
     p6_c1.src = game["players"][5]["cards"][0]["link"];
@@ -180,7 +177,7 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     var p6_c2 = new Image();
     p6_c2.onload = function () {
         //ctx.rotate();
-        ctx.drawImage(p6_c2, x1 + 10, y2 / 2 + y1 - card_height, card_width, card_height);
+        ctx.drawImage(p6_c2, x1 + p6andp3_similar_offset, y2 / 2 + y1 - card_height, card_width, card_height);
     }
 
     p6_c2.src = game["players"][5]["cards"][1]["link"];
@@ -242,7 +239,7 @@ var x1 = c_width * 0.15;
 var y1 = c_height * 0.15;
 var x2 = c_width * 0.7;
 var y2 = c_height * 0.7;
-var r = 100;
+var r = 125;
 var ctx = canvas.getContext('2d');
 drawMainTable(ctx, x1, y1, x2, y2, r);
 var number_of_player = 6;
