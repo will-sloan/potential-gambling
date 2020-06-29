@@ -1,13 +1,9 @@
 import * as wasm from "wasm-poker-game";
 
-function drawMainTable(ctx, height, width) {
+function drawMainTable(ctx, x1, y1, x2, y2, r) {
     // Called pill shaped
 
-    var x1 = width * 0.1;
-    var y1 = height * 0.1;
-    var x2 = width * 0.8;
-    var y2 = height * 0.8;
-    var r = 200;
+
     // ctx.fillStyle = "rgba(0,100,0,0.5)";
     // ctx.fillRect(x1, y1, x2, y2);
     //console.log(width);//, height * 0.1, width * 0.8, height * 0.8);
@@ -32,8 +28,34 @@ function drawMainTable(ctx, height, width) {
 
 }
 
-function get_winner(game) {
-
+function draw_cards(game, ctx, x1, y1, x2, y2, r) {
+    ctx.beginPath();
+    // Loc of Player 6 or the player of left side
+    ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    //ctx.moveTo(x2 + x1, y2 / 2 + y1);
+    ctx.beginPath();
+    // Loc of Player 3 or the right side
+    ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    // Top Two
+    ctx.beginPath();
+    // Loc of Player 1 or the topish left
+    ctx.arc(x1 + x2 / 3, y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    // Loc of Player 2 or the topish right
+    ctx.arc(x1 + x2 * 2 / 3, y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    // Bottom two
+    ctx.beginPath();
+    // Loc of Player 1 or the topish left
+    ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    // Loc of Player 2 or the topish right
+    ctx.arc(x1 + x2 * 2 / 3, y1 + y2, 4, 0, Math.PI * 2);
+    ctx.stroke();
 }
 
 //function drawCards() { }
@@ -41,8 +63,13 @@ function get_winner(game) {
 var canvas = document.getElementById('canvas');
 const c_height = canvas.height;
 const c_width = canvas.width;
+var x1 = c_width * 0.1;
+var y1 = c_height * 0.1;
+var x2 = c_width * 0.8;
+var y2 = c_height * 0.8;
+var r = 200;
 var ctx = canvas.getContext('2d');
-drawMainTable(ctx, c_height, c_width);
+drawMainTable(ctx, x1, y1, x2, y2, r);
 var number_of_player = 6;
 // var a = wasm.new_game();
 
@@ -50,7 +77,7 @@ var number_of_player = 6;
 
 var a = wasm.start_game_from_js(number_of_player);
 //a = wasm.add_player_from_js(a);
-
+draw_cards(a, ctx, x1, y1, x2, y2, r);
 console.log(a);
 
 a = wasm.flop_round_from_js(a);

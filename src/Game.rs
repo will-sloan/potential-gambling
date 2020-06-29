@@ -20,6 +20,36 @@ pub fn shuffle_deck(deck: &mut Vec<Card>) {
     deck.shuffle(&mut thread_rng());
 }
 
+fn create_url(suit: u8, number: u8) -> String {
+    let mut s = "http://willsloan.com/cards/".to_string();
+    match number {
+        0 => s.push_str("two"),
+        1 => s.push_str("three"),
+        2 => s.push_str("four"),
+        3 => s.push_str("five"),
+        4 => s.push_str("six"),
+        5 => s.push_str("seven"),
+        6 => s.push_str("eight"),
+        7 => s.push_str("nine"),
+        8 => s.push_str("ten"),
+        9 => s.push_str("jack"),
+        10 => s.push_str("queen"),
+        11 => s.push_str("king"),
+        12 => s.push_str("ace"),
+        _ => panic!("Error trying to add card number to url!"),
+    }
+    s.push_str("of");
+    match suit {
+        0 => s.push_str("hearts"),
+        1 => s.push_str("clubs"),
+        2 => s.push_str("diamonds"),
+        3 => s.push_str("spades"),
+        _ => panic!("Error trying to add suit to url!"),
+    }
+
+    s
+}
+
 impl Game {
     // used only at the start of the game
     pub fn new_game() -> Game {
@@ -30,10 +60,50 @@ impl Game {
         for i in 0..4 {
             for j in 0..13 {
                 match i {
-                    0 => deck.push(Card { suit: 0, number: j }),
-                    1 => deck.push(Card { suit: 1, number: j }),
-                    2 => deck.push(Card { suit: 2, number: j }),
-                    3 => deck.push(Card { suit: 3, number: j }),
+                    0 => deck.push(Card {
+                        suit: 0,
+                        number: j,
+                        link: format!(
+                            "http://willsloan.com/cards/{}of{}",
+                            match j {
+                                _ => "aaa",
+                            },
+                            "diamonds",
+                        ),
+                    }),
+                    1 => deck.push(Card {
+                        suit: 1,
+                        number: j,
+                        link: format!(
+                            "http://willsloan.com/cards/{}of{}",
+                            match j {
+                                _ => "aaa",
+                            },
+                            "diamonds",
+                        ),
+                    }),
+                    2 => deck.push(Card {
+                        suit: 2,
+                        number: j,
+                        link: format!(
+                            "http://willsloan.com/cards/{}of{}",
+                            match j {
+                                _ => "aaa",
+                            },
+                            "diamonds",
+                        ),
+                    }),
+                    3 => deck.push(Card {
+                        suit: 3,
+                        number: j,
+                        link: format!(
+                            "http://willsloan.com/cards/{}of{}",
+                            match j {
+                                _ => "aaa",
+                            },
+                            "diamonds",
+                        ),
+                    }),
                     _ => deck.push(Card {
                         suit: 4,
                         number: 69,
@@ -412,10 +482,11 @@ The Start the area for Card
 
 */
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone, Ord, PartialOrd, Hash)]
+#[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
 pub struct Card {
     pub suit: u8,
     pub number: u8,
+    pub link: String,
 }
 
 impl Serialize for Card {
@@ -423,9 +494,10 @@ impl Serialize for Card {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Card", 2)?;
+        let mut s = serializer.serialize_struct("Card", 3)?;
         s.serialize_field("number", &self.number)?;
         s.serialize_field("suit", &self.suit)?;
+        s.serialize_field("link", &self.link)?;
         //s.serialize_field("num", &self.num)?;
         s.end()
     }
@@ -438,6 +510,7 @@ impl<'de> Deserialize<'de> for Card {
         enum Field {
             Suit,
             Number,
+            Link,
         };
 
         impl<'de> Deserialize<'de> for Field {
@@ -451,7 +524,7 @@ impl<'de> Deserialize<'de> for Card {
                     type Value = Field;
 
                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                        formatter.write_str("`suit` or `number`")
+                        formatter.write_str("`suit` or `number` or `link`")
                     }
 
                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
@@ -461,6 +534,7 @@ impl<'de> Deserialize<'de> for Card {
                         match value {
                             "suit" => Ok(Field::Suit),
                             "number" => Ok(Field::Number),
+                            "link" => Ok(Field::Link),
                             _ => Err(de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -485,6 +559,7 @@ impl<'de> Deserialize<'de> for Card {
             {
                 let mut suit = None;
                 let mut number = None;
+                let mut link = None;
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::Suit => {
@@ -499,15 +574,22 @@ impl<'de> Deserialize<'de> for Card {
                             }
                             number = Some(map.next_value()?);
                         }
+                        Field::Link => {
+                            if link.is_some() {
+                                return Err(de::Error::duplicate_field("link"));
+                            }
+                            link = Some(map.next_value()?);
+                        }
                     }
                 }
                 let suit = suit.ok_or_else(|| de::Error::missing_field("suit"))?;
                 let number = number.ok_or_else(|| de::Error::missing_field("number"))?;
-                Ok(Card { suit, number })
+                let link = link.ok_or_else(|| de::Error::missing_field("link"))?;
+                Ok(Card { suit, number, link })
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["suit", "number"];
+        const FIELDS: &'static [&'static str] = &["suit", "number", "link"];
         deserializer.deserialize_struct("Card", FIELDS, DurationVisitor)
     }
 }
@@ -537,7 +619,7 @@ impl Serialize for Player {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Player", 5)?;
+        let mut s = serializer.serialize_struct("Player", 6)?;
         s.serialize_field("cards", &self.cards)?;
         s.serialize_field("chips", &self.chips)?;
         s.serialize_field("ip", &self.ip)?;
