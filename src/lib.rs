@@ -62,13 +62,22 @@ pub fn start_game_from_js(num_p: JsValue) -> Result<JsValue, JsValue> {
         g.players.push(p);
     }
     g.deal_to_players();
-
+    g.check_cards();
     serde_wasm_bindgen::to_value(&g).map_err(|err| err.into())
 }
 #[wasm_bindgen]
-pub fn first_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
+pub fn flop_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
     let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
-    // game.do_flop();
+    game.do_flop();
+    game.check_cards();
+    serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
+}
+
+#[wasm_bindgen]
+pub fn other_rounds_from_js(game: JsValue) -> Result<JsValue, JsValue> {
+    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+    game.flip_one();
+    game.check_cards();
     serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
 }
 

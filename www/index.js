@@ -43,13 +43,21 @@ var number_of_player = 6;
 // var a = wasm.new_game();
 
 // console.log(a);
-wasm.greet();
+
 var a = wasm.start_game_from_js(number_of_player);
 //a = wasm.add_player_from_js(a);
 
 console.log(a);
 
-a = wasm.first_round_from_js(a);
+a = wasm.flop_round_from_js(a);
+
+console.log(a);
+
+a = wasm.other_rounds_from_js(a);
+
+console.log(a);
+
+a = wasm.other_rounds_from_js(a);
 
 console.log(a);
 

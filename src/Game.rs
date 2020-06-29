@@ -231,46 +231,34 @@ fn check_straight(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
 }
 
 fn check_flush(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
-    let mut occurances_card_one: u8 = 0;
-    let mut occurances_card_two: u8 = 0;
     let straight = check_straight(hand, flop) == 16;
-    let mut cards: Vec<u8> = [hand.last().unwrap().suit, hand.last().unwrap().suit].to_vec();
+    let mut cards: Vec<u8> = [hand.first().unwrap().suit, hand.last().unwrap().suit].to_vec();
     for i in flop {
         cards.push(i.suit);
     }
+    let mut count_of_each_card: HashMap<u8, u8> = HashMap::new();
 
-    if hand.last().unwrap().suit == hand.last().unwrap().suit {
-        //suit_to_check_one = hand.last().unwrap().suit;
-        if cards
-            .iter()
-            .filter(|x| **x == hand.last().unwrap().suit)
-            .collect::<Vec<&u8>>()
-            .len() as u8
-            >= 5
-        {
-            if straight {
-                return 20;
-            } else {
-                return 17;
-            }
-        } else {
-            return 0;
-        }
+    for card in cards {
+        let count = count_of_each_card.entry(card).or_insert(0);
+        *count += 1;
+    }
+
+    let mut vals = count_of_each_card.values().collect::<Vec<&u8>>();
+    vals.sort_by(|a, b| b.cmp(a));
+
+    if vals.is_empty() {
+        0
     } else {
-        occurances_card_one = cards
-            .iter()
-            .filter(|x| **x == hand.last().unwrap().suit)
-            .collect::<Vec<&u8>>()
-            .len() as u8;
-        occurances_card_two = cards
-            .iter()
-            .filter(|x| **x == hand.first().unwrap().suit)
-            .collect::<Vec<&u8>>()
-            .len() as u8;
-        if occurances_card_one >= 5 || occurances_card_two >= 5 {
-            return 16;
-        } else {
-            return 0;
+        match *vals[0] {
+            x if x >= 5 && straight => {
+                println!("{:?}", vals);
+                21
+            }
+            x if x >= 5 => {
+                println!("{:?}", vals);
+                17
+            }
+            _ => 0,
         }
     }
 }
