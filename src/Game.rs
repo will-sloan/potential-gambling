@@ -306,7 +306,7 @@ fn check_flush(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
                 21
             }
             x if x >= 5 => {
-                //println!("{:?}", vals);
+                //web_sys::console::log(&vals.into());
                 17
             }
             _ => 0,

@@ -1,6 +1,6 @@
 import * as wasm from "wasm-poker-game";
 
-
+var current_pos = 0;
 function drawMainTable(ctx, x1, y1, x2, y2, r) {
     // Called pill shaped
 
@@ -35,7 +35,7 @@ function drawMainTable(ctx, x1, y1, x2, y2, r) {
     //ctx.stroke();
 }
 
-function draw_next_button(height, width) {
+function draw_next_button() {
     var buttonX = 70;
     var buttonY = 80;
     var buttonW = 60;
@@ -60,14 +60,27 @@ function draw_next_button(height, width) {
             y < buttonY + buttonH
         ) {
             // Executes if button was clicked!
-            alert('Button was clicked!');
+            // alert('Button was clicked!');
+            current_pos++;
+            console.log("Button was clicked. Pos now: " + current_pos);
+            m();
         }
     });
+}
+
+function redraw_button() {
+    var buttonX = 70;
+    var buttonY = 80;
+    var buttonW = 60;
+    var buttonH = 30;
+    // Render button
+    ctx.fillStyle = 'red';
+    ctx.fillRect(buttonX, buttonY, buttonW, buttonH);
 }
 const card_height = 125;
 const card_width = 75;
 const p6andp3_similar_offset = 15;
-function draw_cards(game, ctx, x1, y1, x2, y2, r) {
+function draw_players(game, ctx, x1, y1, x2, y2, r) {
     // Top Two
     // ctx.beginPath();
     // // Loc of Player 1 or the topish left
@@ -259,11 +272,59 @@ function draw_names_and_scores(game, ctx, x1, y1, x2, y2, r) {
 }
 
 function draw_flop(game, ctx, x1, y1, x2, y2, r) {
+    console.log("In flop");
     ctx.beginPath();
     // Loc of Player 6 or the player of left side
     ctx.arc(x2 / 2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
     ctx.stroke();
+    const images = [];
 
+    var imageCount = 0;
+    console.log(game["flop"].length);
+
+    game["flop"].forEach(src => {
+        var f = new Image();
+        f.src = src["link"];
+        f.onload = () => {
+            imageCount += 1;
+            if (imageCount === game["flop"].length) {
+                console.log("In image count");
+                for (var j = 0; j < game["flop"].length; j++) {
+                    console.log("J is: " + j);
+                    ctx.drawImage(images[j], x2 / 2 + x1 - (card_width * 5) / 2 + (75 * j), y2 / 2 + y1 - card_height / 2, card_width, card_height);
+                }
+            }
+        }
+        images.push(f);
+
+    });
+    // console.log("I is: " + i);
+
+    // f.onload = function () {
+    //     console.log("In onload");
+    //     //ctx.rotate();
+    //     //ctx.drawImage(f, x2 / 2 + x1 - card_width * (5 - i) / 2, y2 / 2 + y1 - card_height / 2, card_width, card_height);
+    //     if (imageCount == game["flop"].length - 1) {
+    //         console.log("In image count");
+    //         for (var j = 0; j < game["flop"].length; j++) {
+    //             console.log("J is: " + j);
+    //             ctx.drawImage(f, x2 / 2 + x1 - (card_width * 5) / 2 + (75 * j), y2 / 2 + y1 - card_height / 2, card_width, card_height);
+    //         }
+    //     }
+    // }
+
+    // f.src = game["flop"][i]["link"];
+    // }
+    // for (card of game["flop"]) {
+    //     var f = new Image();
+    //     f.onload = function () {
+    //         //ctx.rotate();
+    //         ctx.drawImage(f, x2 / 2 + x1 - card_width * 5 / 2, y2 / 2 + y1 - card_height / 2, card_width, card_height);
+    //     }
+
+    //     f.src = game["flop"][0]["link"];
+    // }
+    /*
     var flop_1 = new Image();
     flop_1.onload = function () {
         //ctx.rotate();
@@ -286,7 +347,9 @@ function draw_flop(game, ctx, x1, y1, x2, y2, r) {
         ctx.drawImage(flop_3, x2 / 2 + x1 - card_width / 2, y2 / 2 + y1 - card_height / 2, card_width, card_height);
     }
 
+
     flop_3.src = game["flop"][2]["link"];
+    */
 }
 
 function doFourthCard(game, ctx, x1, y1, x2, y2, r) {
@@ -311,36 +374,62 @@ var number_of_player = 6;
 // var window_width = $(window).width();
 // console.log(window_height);
 // console.log(window_width);
-
 var a = wasm.start_game_from_js(number_of_player);
-//a = wasm.add_player_from_js(a);
-drawMainTable(ctx, x1, y1, x2, y2, r);
-draw_cards(a, ctx, x1, y1, x2, y2, r);
-draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+m();
+function m() {
+    if (current_pos == 0) {
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    } else if (current_pos == 1) {
+        ctx.clearRect(0, 0, c_width, c_height);
+        a = wasm.flop_round_from_js(a);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        redraw_button();
+    } else if (current_pos == 2) {
+        a = wasm.other_rounds_from_js(a);
+        ctx.clearRect(0, 0, c_width, c_height);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        redraw_button();
+    } else if (current_pos == 3) {
+        a = wasm.other_rounds_from_js(a);
+        ctx.clearRect(0, 0, c_width, c_height);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        redraw_button();
+    } else {
+        // Game is done
+        ctx.clearRect(0, 0, c_width, c_height);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        console.log(a);
+    }
 
-console.log(a);
-ctx.clearRect(0, 0, c_width, c_height);
-a = wasm.flop_round_from_js(a);
-drawMainTable(ctx, x1, y1, x2, y2, r);
-draw_cards(a, ctx, x1, y1, x2, y2, r);
-draw_flop(a, ctx, x1, y1, x2, y2, r);
-draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    // a = wasm.other_rounds_from_js(a);
+
+    // console.log(a);
+
+    // a = wasm.other_rounds_from_js(a);
+
+    // console.log(a);
+
+    // var b = wasm.person_to_js();
+    // console.log(b);
+    // b = wasm.increment_num(b);
+
+    // console.log(b);
+    // b = wasm.basically_new_person(b);
+    // console.log(b)
+
+}
 draw_next_button();
-console.log(a);
-
-a = wasm.other_rounds_from_js(a);
-
-console.log(a);
-
-a = wasm.other_rounds_from_js(a);
-
-console.log(a);
-
-// var b = wasm.person_to_js();
-// console.log(b);
-// b = wasm.increment_num(b);
-
-// console.log(b);
-// b = wasm.basically_new_person(b);
-// console.log(b)
-
