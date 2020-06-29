@@ -13,6 +13,7 @@ pub struct Game {
     //pub num: u8,
     pub pool: u32,
     pub flop: Vec<Card>,
+    pub winner: String,
 }
 
 pub fn shuffle_deck(deck: &mut Vec<Card>) {
@@ -47,6 +48,7 @@ impl Game {
             players,
             pool: 0,
             flop: Vec::new(),
+            winner: String::from(""),
         }
     }
     // Used after the hand is done
@@ -67,6 +69,7 @@ impl Game {
             players: new_player,
             pool,
             flop: Vec::new(),
+            winner: String::from(""),
         }
     }
 
@@ -110,21 +113,22 @@ impl Game {
     pub fn check_cards(&mut self) -> String {
         let mut points: HashMap<Player, u8> = HashMap::new();
         for index in 0..self.players.len() {
+            let cardone = self.players[index].cards.first().unwrap().number;
+            let cardtwo = self.players[index].cards.last().unwrap().number;
+            if cardone > cardtwo {
+                self.players[index].highcard = cardone;
+            } else {
+                self.players[index].highcard = cardtwo;
+            }
             let flush = check_flush(&self.players[index].cards, &self.flop.clone());
             let straight = check_straight(&self.players[index].cards, &self.flop.clone());
             let pairs = check_pairs(&self.players[index].cards, &self.flop.clone());
 
-            let value_of_hand = [
-                flush,
-                straight,
-                pairs,
-                self.players[index].cards.last().unwrap().number,
-                self.players[index].cards.first().unwrap().number,
-            ]
-            .iter()
-            .max()
-            .unwrap()
-            .clone();
+            let value_of_hand = [flush, straight, pairs, cardone, cardtwo]
+                .iter()
+                .max()
+                .unwrap()
+                .clone();
             self.players[index].hand = value_of_hand;
             points.insert(self.players[index].clone(), value_of_hand);
         }
@@ -273,6 +277,7 @@ impl Serialize for Game {
         s.serialize_field("deck", &self.deck)?;
         s.serialize_field("pool", &self.pool)?;
         s.serialize_field("flop", &self.flop)?;
+        s.serialize_field("winner", &self.winner)?;
         //s.serialize_field("num", &self.num)?;
         s.end()
     }
@@ -288,6 +293,7 @@ impl<'de> Deserialize<'de> for Game {
             Deck,
             Pool,
             Flop,
+            Winner,
         };
 
         impl<'de> Deserialize<'de> for Field {
@@ -301,7 +307,7 @@ impl<'de> Deserialize<'de> for Game {
                     type Value = Field;
 
                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                        formatter.write_str("`players` or `deck` or `pool` or `flop`")
+                        formatter.write_str("`players` or `deck` or `pool` or `flop` or `winner`")
                     }
 
                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
@@ -313,6 +319,7 @@ impl<'de> Deserialize<'de> for Game {
                             "deck" => Ok(Field::Deck),
                             "pool" => Ok(Field::Pool),
                             "flop" => Ok(Field::Flop),
+                            "winner" => Ok(Field::Winner),
                             _ => Err(de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -339,6 +346,7 @@ impl<'de> Deserialize<'de> for Game {
                 let mut deck = None;
                 let mut pool = None;
                 let mut flop = None;
+                let mut winner = None;
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::Players => {
@@ -365,22 +373,30 @@ impl<'de> Deserialize<'de> for Game {
                             }
                             flop = Some(map.next_value()?);
                         }
+                        Field::Winner => {
+                            if winner.is_some() {
+                                return Err(de::Error::duplicate_field("winner"));
+                            }
+                            winner = Some(map.next_value()?);
+                        }
                     }
                 }
                 let players = players.ok_or_else(|| de::Error::missing_field("players"))?;
                 let deck = deck.ok_or_else(|| de::Error::missing_field("deck"))?;
                 let pool = pool.ok_or_else(|| de::Error::missing_field("pool"))?;
                 let flop = flop.ok_or_else(|| de::Error::missing_field("flop"))?;
+                let winner = winner.ok_or_else(|| de::Error::missing_field("winner"))?;
                 Ok(Game {
                     players,
                     deck,
                     pool,
                     flop,
+                    winner,
                 })
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["players", "deck", "pool", "flop"];
+        const FIELDS: &'static [&'static str] = &["players", "deck", "pool", "flop", "winner"];
         deserializer.deserialize_struct("Game", FIELDS, DurationVisitor)
     }
 }
@@ -513,6 +529,7 @@ pub struct Player {
     pub ip: String,
     pub folded: bool,
     pub hand: u8, // value of players hand
+    pub highcard: u8,
 }
 
 impl Serialize for Player {
@@ -526,6 +543,7 @@ impl Serialize for Player {
         s.serialize_field("ip", &self.ip)?;
         s.serialize_field("folded", &self.folded)?;
         s.serialize_field("hand", &self.hand)?;
+        s.serialize_field("highcard", &self.highcard)?;
         //s.serialize_field("num", &self.num)?;
         s.end()
     }
@@ -542,6 +560,7 @@ impl<'de> Deserialize<'de> for Player {
             Ip,
             Folded,
             Hand,
+            Highcard,
         };
 
         impl<'de> Deserialize<'de> for Field {
@@ -555,7 +574,9 @@ impl<'de> Deserialize<'de> for Player {
                     type Value = Field;
 
                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                        formatter.write_str("`cards` or `chips` or `ip` or `folded` or `hand`")
+                        formatter.write_str(
+                            "`cards` or `chips` or `ip` or `folded` or `hand` or `highcard`",
+                        )
                     }
 
                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
@@ -568,6 +589,7 @@ impl<'de> Deserialize<'de> for Player {
                             "ip" => Ok(Field::Ip),
                             "folded" => Ok(Field::Folded),
                             "hand" => Ok(Field::Hand),
+                            "highcard" => Ok(Field::Highcard),
                             _ => Err(de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -595,6 +617,7 @@ impl<'de> Deserialize<'de> for Player {
                 let mut ip = None;
                 let mut folded = None;
                 let mut hand = None;
+                let mut highcard = None;
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::Cards => {
@@ -627,6 +650,12 @@ impl<'de> Deserialize<'de> for Player {
                             }
                             hand = Some(map.next_value()?);
                         }
+                        Field::Highcard => {
+                            if highcard.is_some() {
+                                return Err(de::Error::duplicate_field("highcard"));
+                            }
+                            highcard = Some(map.next_value()?);
+                        }
                     }
                 }
                 let cards = cards.ok_or_else(|| de::Error::missing_field("cards"))?;
@@ -634,17 +663,20 @@ impl<'de> Deserialize<'de> for Player {
                 let ip = ip.ok_or_else(|| de::Error::missing_field("ip"))?;
                 let folded = folded.ok_or_else(|| de::Error::missing_field("folded"))?;
                 let hand = hand.ok_or_else(|| de::Error::missing_field("hand"))?;
+                let highcard = highcard.ok_or_else(|| de::Error::missing_field("highcard"))?;
                 Ok(Player {
                     cards,
                     chips,
                     ip,
                     folded,
                     hand,
+                    highcard,
                 })
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["cards", "chips", "ip", "folded", "hand"];
+        const FIELDS: &'static [&'static str] =
+            &["cards", "chips", "ip", "folded", "hand", "highcard"];
         deserializer.deserialize_struct("Player", FIELDS, DurationVisitor)
     }
 }

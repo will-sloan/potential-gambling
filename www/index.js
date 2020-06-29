@@ -32,6 +32,10 @@ function drawMainTable(ctx, height, width) {
 
 }
 
+function get_winner(game) {
+
+}
+
 //function drawCards() { }
 
 var canvas = document.getElementById('canvas');
