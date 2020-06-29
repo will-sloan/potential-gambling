@@ -29,41 +29,154 @@ function drawMainTable(ctx, x1, y1, x2, y2, r) {
 }
 
 function draw_cards(game, ctx, x1, y1, x2, y2, r) {
-    ctx.beginPath();
-    // Loc of Player 6 or the player of left side
-    ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
-    var p1_c1 = new Image();
-    p1_c1.onload = function () {
-        ctx.drawImage(p1_c1, x1, y2 / 2 + y1, 75, 125);
-    }
-    console.log("Here: ");
-    console.log(game["players"][0]["cards"][0]["link"]);
-    p1_c1.src = game["players"][0]["cards"][0]["link"];
-
-    ctx.stroke();
-    //ctx.moveTo(x2 + x1, y2 / 2 + y1);
-    ctx.beginPath();
-    // Loc of Player 3 or the right side
-    ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
-    ctx.stroke();
     // Top Two
     ctx.beginPath();
     // Loc of Player 1 or the topish left
     ctx.arc(x1 + x2 / 3, y1, 4, 0, Math.PI * 2);
     ctx.stroke();
+
+    var p1_c1 = new Image();
+    p1_c1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p1_c1, x1 + x2 / 3, y1, 75, 125);
+    }
+    p1_c1.src = game["players"][0]["cards"][0]["link"];
+
+    var p1_c2 = new Image();
+    p1_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p1_c2, x1 + x2 / 3 - 75, y1, 75, 125);
+    }
+    p1_c2.src = game["players"][0]["cards"][1]["link"];
+
+
+
+
     ctx.beginPath();
     // Loc of Player 2 or the topish right
     ctx.arc(x1 + x2 * 2 / 3, y1, 4, 0, Math.PI * 2);
     ctx.stroke();
+
+    var p2_c1 = new Image();
+    p2_c1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p2_c1, x1 + x2 * 2 / 3, y1, 75, 125);
+    }
+    p2_c1.src = game["players"][1]["cards"][0]["link"];
+
+    var p2_c2 = new Image();
+    p2_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p2_c2, x1 + x2 * 2 / 3 - 75, y1, 75, 125);
+    }
+
+    p2_c2.src = game["players"][1]["cards"][1]["link"];
+
+
+
+    // Loc of Player 3 or the right side
+    ctx.beginPath();
+    ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    var p3_c1 = new Image();
+    p3_c1.onload = function () {
+        //ctx.rotate();
+        // 90 instead of 75 so they are completely on board
+        ctx.drawImage(p3_c1, x2 + x1 - 90, y2 / 2 + y1, 75, 125);
+    }
+
+    p3_c1.src = game["players"][2]["cards"][0]["link"];
+
+    var p3_c2 = new Image();
+    p3_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p3_c2, x2 + x1 - 90, y2 / 2 + y1 - 125, 75, 125);
+    }
+
+    p3_c2.src = game["players"][2]["cards"][1]["link"];
+
+
+
+
     // Bottom two
     ctx.beginPath();
-    // Loc of Player 1 or the topish left
+    // Loc of Player 5 or the bottomish left
     ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
     ctx.stroke();
+    var p5_c1 = new Image();
+    p5_c1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p5_c1, x1 + x2 / 3, y1 + y2 - 125, 75, 125);
+    }
+
+    p5_c1.src = game["players"][4]["cards"][0]["link"];
+
+    var p5_c2 = new Image();
+    p5_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p5_c2, x1 + x2 / 3 - 75, y1 + y2 - 125, 75, 125);
+    }
+
+    p5_c2.src = game["players"][4]["cards"][1]["link"];
+
+
+
     ctx.beginPath();
-    // Loc of Player 2 or the topish right
+    // Loc of Player 4 or the bottomish right
     ctx.arc(x1 + x2 * 2 / 3, y1 + y2, 4, 0, Math.PI * 2);
     ctx.stroke();
+
+    var p4_c1 = new Image();
+    p4_c1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p4_c1, x1 + x2 * 2 / 3, y1 + y2 - 125, 75, 125);
+    }
+
+    p4_c1.src = game["players"][3]["cards"][0]["link"];
+
+    var p4_c2 = new Image();
+    p4_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p4_c2, x1 + x2 * 2 / 3 - 75, y1 + y2 - 125, 75, 125);
+    }
+
+    p4_c2.src = game["players"][3]["cards"][1]["link"];
+
+
+
+    ctx.beginPath();
+    // Loc of Player 6 or the player of left side
+    ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    var p6_c1 = new Image();
+    p6_c1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p6_c1, x1 + 10, y2 / 2 + y1, 75, 125);
+    }
+
+    p6_c1.src = game["players"][5]["cards"][0]["link"];
+
+    var p6_c2 = new Image();
+    p6_c2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(p6_c2, x1 + 10, y2 / 2 + y1 - 125, 75, 125);
+    }
+
+    p6_c2.src = game["players"][5]["cards"][1]["link"];
+    //ctx.beginPath();
+    // var p6_c1 = new Image();
+    // p1_c1.onload = function () {
+    //     //ctx.rotate();
+    //     ctx.drawImage(p6_c1, x1, y2 / 2 + y1, 75, 125);
+    // }
+    // console.log("Here: ");
+
+    // console.log(game["players"][0]["cards"][0]["link"]);
+
+    // p6_c1.src = game["players"][0]["cards"][0]["link"];
+
 }
 
 //function drawCards() { }
