@@ -125,18 +125,18 @@ impl Game {
         // Shuffles the cards
         // then redeals
         for index in 0..self.players.len() {
-            println!("Index of players");
+            //println!("Index of players");
             match self.players[index].cards.pop() {
                 Some(card) => self.deck.push(card),
                 None => {
-                    println!("No cards in player");
+                    //println!("No cards in player");
                     continue;
                 }
             }
             match self.players[index].cards.pop() {
                 Some(card) => self.deck.push(card),
                 None => {
-                    println!("No cards in player");
+                    //println!("No cards in player");
                     continue;
                 }
             }
@@ -145,7 +145,7 @@ impl Game {
         shuffle_deck(&mut self.deck);
 
         for index in 0..self.players.len() {
-            println!("Index of deck");
+            //println!("Index of deck");
             match self.deck.pop() {
                 Some(card) => self.players[index].cards.push(card),
                 None => panic!("No cards in deck"),
@@ -215,7 +215,7 @@ fn check_pairs(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
 
     let mut vals = count_of_each_card.values().collect::<Vec<&u8>>();
     vals.sort_by(|a, b| b.cmp(a));
-    println!("{:?}", count_of_each_card);
+    //println!("{:?}", count_of_each_card);
     /*
     Possible Combos:
     Four of a kind: max_val[0] == 4
@@ -302,11 +302,11 @@ fn check_flush(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
     } else {
         match *vals[0] {
             x if x >= 5 && straight => {
-                println!("{:?}", vals);
+                //println!("{:?}", vals);
                 21
             }
             x if x >= 5 => {
-                println!("{:?}", vals);
+                //println!("{:?}", vals);
                 17
             }
             _ => 0,

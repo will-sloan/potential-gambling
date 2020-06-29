@@ -149,7 +149,10 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     // Loc of Player 6 or the player of left side
     ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
     ctx.stroke();
-
+    ctx.font = '36px serif';
+    ctx.rotate(Math.PI / 2);
+    ctx.fillText('Player 6', x1 - 75, y2 / 2 + y1);
+    ctx.rotate(-Math.PI / 2);
     var p6_c1 = new Image();
     p6_c1.onload = function () {
         //ctx.rotate();
@@ -179,6 +182,41 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
 
 }
 
+function draw_flop(game, ctx, x1, y1, x2, y2, r) {
+    ctx.beginPath();
+    // Loc of Player 6 or the player of left side
+    ctx.arc(x2 / 2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    var flop_1 = new Image();
+    flop_1.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(flop_1, x2 / 2 + x1 - 375 / 2, y2 / 2 + y1 - 125 / 2, 75, 125);
+    }
+
+    flop_1.src = game["flop"][0]["link"];
+
+    var flop_2 = new Image();
+    flop_2.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(flop_2, x2 / 2 + x1 - 225 / 2, y2 / 2 + y1 - 125 / 2, 75, 125);
+    }
+
+    flop_2.src = game["flop"][1]["link"];
+
+    var flop_3 = new Image();
+    flop_3.onload = function () {
+        //ctx.rotate();
+        ctx.drawImage(flop_3, x2 / 2 + x1 - 75 / 2, y2 / 2 + y1 - 125 / 2, 75, 125);
+    }
+
+    flop_3.src = game["flop"][2]["link"];
+}
+
+function doFourthCard(game, ctx, x1, y1, x2, y2, r) {
+
+}
+
 //function drawCards() { }
 
 var canvas = document.getElementById('canvas');
@@ -199,10 +237,11 @@ var number_of_player = 6;
 var a = wasm.start_game_from_js(number_of_player);
 //a = wasm.add_player_from_js(a);
 draw_cards(a, ctx, x1, y1, x2, y2, r);
+
 console.log(a);
 
 a = wasm.flop_round_from_js(a);
-
+draw_flop(a, ctx, x1, y1, x2, y2, r);
 console.log(a);
 
 a = wasm.other_rounds_from_js(a);
