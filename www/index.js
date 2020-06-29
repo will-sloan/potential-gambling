@@ -32,6 +32,14 @@ function draw_cards(game, ctx, x1, y1, x2, y2, r) {
     ctx.beginPath();
     // Loc of Player 6 or the player of left side
     ctx.arc(x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
+    var p1_c1 = new Image();
+    p1_c1.onload = function () {
+        ctx.drawImage(p1_c1, x1, y2 / 2 + y1, 75, 125);
+    }
+    console.log("Here: ");
+    console.log(game["players"][0]["cards"][0]["link"]);
+    p1_c1.src = game["players"][0]["cards"][0]["link"];
+
     ctx.stroke();
     //ctx.moveTo(x2 + x1, y2 / 2 + y1);
     ctx.beginPath();

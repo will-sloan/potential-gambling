@@ -46,7 +46,7 @@ fn create_url(suit: u8, number: u8) -> String {
         3 => s.push_str("spades"),
         _ => panic!("Error trying to add suit to url!"),
     }
-
+    s.push_str(".png");
     s
 }
 
@@ -63,50 +63,27 @@ impl Game {
                     0 => deck.push(Card {
                         suit: 0,
                         number: j,
-                        link: format!(
-                            "http://willsloan.com/cards/{}of{}",
-                            match j {
-                                _ => "aaa",
-                            },
-                            "diamonds",
-                        ),
+                        link: create_url(i, j),
                     }),
                     1 => deck.push(Card {
                         suit: 1,
                         number: j,
-                        link: format!(
-                            "http://willsloan.com/cards/{}of{}",
-                            match j {
-                                _ => "aaa",
-                            },
-                            "diamonds",
-                        ),
+                        link: create_url(i, j),
                     }),
                     2 => deck.push(Card {
                         suit: 2,
                         number: j,
-                        link: format!(
-                            "http://willsloan.com/cards/{}of{}",
-                            match j {
-                                _ => "aaa",
-                            },
-                            "diamonds",
-                        ),
+                        link: create_url(i, j),
                     }),
                     3 => deck.push(Card {
                         suit: 3,
                         number: j,
-                        link: format!(
-                            "http://willsloan.com/cards/{}of{}",
-                            match j {
-                                _ => "aaa",
-                            },
-                            "diamonds",
-                        ),
+                        link: create_url(i, j),
                     }),
                     _ => deck.push(Card {
                         suit: 4,
                         number: 69,
+                        link: "error_making_card".to_string(),
                     }),
                 }
             }
@@ -122,26 +99,26 @@ impl Game {
         }
     }
     // Used after the hand is done
-    pub fn cont_game(&self, players: Vec<Player>, deck: &mut Vec<Card>, pool: u32) -> Game {
-        let counter = 0;
-        let mut new_player: Vec<Player> = Vec::new();
-        for player in players {
-            deck.push(player.cards[0]);
-            deck.push(player.cards[1]);
-        }
-        shuffle_deck(deck);
+    // pub fn cont_game(&self, players: Vec<Player>, deck: &mut Vec<Card>, pool: u32) -> Game {
+    //     let counter = 0;
+    //     let mut new_player: Vec<Player> = Vec::new();
+    //     for player in players {
+    //         deck.push(player.cards[0].clone());
+    //         deck.push(player.cards[1]);
+    //     }
+    //     shuffle_deck(deck);
 
-        for player_num in 0..counter {
-            new_player[player_num].cards.push(deck.pop().unwrap());
-        }
-        Game {
-            deck: deck.to_vec(),
-            players: new_player,
-            pool,
-            flop: Vec::new(),
-            winner: String::from(""),
-        }
-    }
+    //     for player_num in 0..counter {
+    //         new_player[player_num].cards.push(deck.pop().unwrap());
+    //     }
+    //     Game {
+    //         deck: deck.to_vec(),
+    //         players: new_player,
+    //         pool,
+    //         flop: Vec::new(),
+    //         winner: String::from(""),
+    //     }
+    // }
 
     pub fn deal_to_players(&mut self) {
         // goes puts all cards from players into deck
