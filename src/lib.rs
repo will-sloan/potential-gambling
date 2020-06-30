@@ -64,21 +64,29 @@ pub fn start_game_from_js(num_p: JsValue) -> Result<JsValue, JsValue> {
     g.deal_to_players();
     serde_wasm_bindgen::to_value(&g).map_err(|err| err.into())
 }
-// #[wasm_bindgen]
-// pub fn flop_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
-//     let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
-//     game.do_flop();
-//     game.winner = game.check_cards();
-//     serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
-// }
+#[wasm_bindgen]
+pub fn flop_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
+    web_sys::console::log_1(&"Hello".into());
+    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+    web_sys::console::log_1(&"h1".into());
+    game.do_flop();
+    web_sys::console::log_1(&"h2".into());
+    serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
+}
 
-// #[wasm_bindgen]
-// pub fn other_rounds_from_js(game: JsValue) -> Result<JsValue, JsValue> {
-//     let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
-//     game.flip_one();
-//     game.winner = game.check_cards();
-//     serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
-// }
+#[wasm_bindgen]
+pub fn other_rounds_from_js(game: JsValue) -> Result<JsValue, JsValue> {
+    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+    game.flip_one();
+    serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
+}
+
+#[wasm_bindgen]
+pub fn end_game(game: JsValue) -> Result<JsValue, JsValue> {
+    let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
+    game.check_cards();
+    serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
+}
 
 /*
 FOR TESTING PURPOSES

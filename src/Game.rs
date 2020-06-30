@@ -5,7 +5,7 @@ use rand::thread_rng;
 use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use std::fmt;
-
+extern crate web_sys;
 mod arrays;
 
 #[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
@@ -168,14 +168,62 @@ impl Game {
             }
         }
     }
+    /*
 
+    short
+    eval_7hand(int *hand)
+    {
+        int i, j, q, best = 9999, subhand[5];
+
+        for (i = 0; i < 21; i++)
+        {
+            for (j = 0; j < 5; j++)
+                subhand[j] = hand[ perm7[i][j] ];
+            q = eval_5hand(subhand);
+            if (q < best)
+                best = q;
+        }
+        return best;
+    }
+
+    */
     pub fn check_cards(&mut self) {
         // both the player cards and the flop cards
-        let mut winning_player = String::new();
-        let mut current_best = 0;
+        let mut winning_player = String::from("ERRRR");
+        let mut current_best = 9999;
+        let mut p_and_f: Vec<Card> = Vec::new();
+        web_sys::console::log_1(&"after winning_player".into());
         for index in 0..self.players.len() {
-            let mut p_and_f = self.players[index].cards.clone();
+            p_and_f = self.players[index].cards.clone();
+            p_and_f.append(&mut self.flop.clone());
+            let mut personal_best = 9999; // high is worse!
+            let mut sub_hand = vec![0, 0, 0, 0, 0];
+            web_sys::console::log_1(&format!("after creating hand: {:#?}", &p_and_f).into());
+            for x in 0..21 {
+                web_sys::console::log_1(&format!("X: {}", &x).into());
+                for y in 0..5 {
+                    web_sys::console::log_1(&format!("Y: {}", &y).into());
+                    sub_hand[y] = p_and_f[arrays::perm7[x][y] as usize].card;
+                }
+                web_sys::console::log_1(&format!("Subhand: {:#?}", &sub_hand).into());
+                let v = eval_5cards(
+                    sub_hand[0],
+                    sub_hand[1],
+                    sub_hand[2],
+                    sub_hand[3],
+                    sub_hand[4],
+                );
+                web_sys::console::log_1(&format!("V: {}", &v).into());
+                if v < personal_best {
+                    personal_best = v;
+                    web_sys::console::log_1(&format!("New best: {}", &personal_best).into());
+                }
+            }
+            /*
+            web_sys::console::log_1(&format!("in for loop: {}", index).into());
+            p_and_f = self.players[index].cards.clone();
             p_and_f.append(&mut self.flop);
+            web_sys::console::log_1(&format!("after creating one hand: {:#?}", p_and_f).into());
             let v = eval_5cards(
                 p_and_f[0].card,
                 p_and_f[1].card,
@@ -183,17 +231,19 @@ impl Game {
                 p_and_f[3].card,
                 p_and_f[4].card,
             );
-            if v > current_best {
+            */
+            if personal_best < current_best {
                 winning_player = self.players[index].ip.clone();
-                current_best = v;
+                current_best = personal_best;
             }
-            self.players[index].handvalue = v;
+            self.players[index].handvalue = personal_best;
+            p_and_f.clear();
         }
         self.winner = winning_player;
     }
 
     pub fn do_flop(&mut self) {
-        for i in 0..3 {
+        for _ in 0..3 {
             self.flop.push(self.deck.pop().unwrap());
         }
     }
@@ -477,7 +527,7 @@ impl Serialize for Player {
         s.serialize_field("chips", &self.chips)?;
         s.serialize_field("ip", &self.ip)?;
         s.serialize_field("folded", &self.folded)?;
-        s.serialize_field("hand_value", &self.handvalue)?;
+        s.serialize_field("handvalue", &self.handvalue)?;
         //s.serialize_field("num", &self.num)?;
         s.end()
     }

@@ -241,34 +241,34 @@ function draw_names_and_scores(game, ctx, x1, y1, x2, y2, r) {
     ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
     ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
-    ctx.fillText(game["players"][0]["hand"], x1 + x2 / 3 - card_width / 2, y1 - 15);
+    ctx.fillText(game["players"][0]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 - 15);
     // player 2
     ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
     ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
-    ctx.fillText(game["players"][1]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
+    ctx.fillText(game["players"][1]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
 
     // player 3
     ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
     ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
-    ctx.fillText(game["players"][2]["hand"], x2 + x1, y2 / 2 + y1 + 30);
+    ctx.fillText(game["players"][2]["handvalue"], x2 + x1, y2 / 2 + y1 + 30);
     // player 4
     ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
     ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
-    ctx.fillText(game["players"][3]["hand"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    ctx.fillText(game["players"][3]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
     // player 5
     ctx.stroke();
     ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
     ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
-    ctx.fillText(game["players"][4]["hand"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    ctx.fillText(game["players"][4]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
     // player 6
     ctx.font = '30px serif';
     ctx.fontStyle = "aqua";
     ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
-    ctx.fillText(game["players"][5]["hand"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
+    ctx.fillText(game["players"][5]["handvalue"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
 }
 
 function draw_flop(game, ctx, x1, y1, x2, y2, r) {
@@ -375,45 +375,54 @@ var number_of_player = 6;
 // console.log(window_height);
 // console.log(window_width);
 var a = wasm.start_game_from_js(number_of_player);
-m();
+a = wasm.flop_round_from_js(a);
+a = wasm.other_rounds_from_js(a);
+a = wasm.other_rounds_from_js(a);
+a = wasm.end_game(a);
+console.log(a);
+drawMainTable(ctx, x1, y1, x2, y2, r);
+draw_players(a, ctx, x1, y1, x2, y2, r);
+draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+draw_flop(a, ctx, x1, y1, x2, y2, r);
 function m() {
-    //    if (current_pos == 0) {
-    drawMainTable(ctx, x1, y1, x2, y2, r);
-    draw_players(a, ctx, x1, y1, x2, y2, r);
-    //draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-    // } else if (current_pos == 1) {
-    //     ctx.clearRect(0, 0, c_width, c_height);
-    //     a = wasm.flop_round_from_js(a);
-    //     drawMainTable(ctx, x1, y1, x2, y2, r);
-    //     draw_players(a, ctx, x1, y1, x2, y2, r);
-    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
-    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-    //     redraw_button();
-    // } else if (current_pos == 2) {
-    //     a = wasm.other_rounds_from_js(a);
-    //     ctx.clearRect(0, 0, c_width, c_height);
-    //     drawMainTable(ctx, x1, y1, x2, y2, r);
-    //     draw_players(a, ctx, x1, y1, x2, y2, r);
-    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
-    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-    //     redraw_button();
-    // } else if (current_pos == 3) {
-    //     a = wasm.other_rounds_from_js(a);
-    //     ctx.clearRect(0, 0, c_width, c_height);
-    //     drawMainTable(ctx, x1, y1, x2, y2, r);
-    //     draw_players(a, ctx, x1, y1, x2, y2, r);
-    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
-    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-    //     redraw_button();
-    // } else {
-    //     // Game is done
-    //     ctx.clearRect(0, 0, c_width, c_height);
-    //     drawMainTable(ctx, x1, y1, x2, y2, r);
-    //     draw_players(a, ctx, x1, y1, x2, y2, r);
-    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
-    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-    //     console.log(a);
-    // }
+    if (current_pos == 0) {
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    } else if (current_pos == 1) {
+        ctx.clearRect(0, 0, c_width, c_height);
+        a = wasm.flop_round_from_js(a);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        redraw_button();
+    } else if (current_pos == 2) {
+        a = wasm.other_rounds_from_js(a);
+        ctx.clearRect(0, 0, c_width, c_height);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        redraw_button();
+    } else if (current_pos == 3) {
+        a = wasm.other_rounds_from_js(a);
+        ctx.clearRect(0, 0, c_width, c_height);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        redraw_button();
+    } else {
+        // Game is done
+        a = wasm.end_game(a);
+        ctx.clearRect(0, 0, c_width, c_height);
+        drawMainTable(ctx, x1, y1, x2, y2, r);
+        draw_players(a, ctx, x1, y1, x2, y2, r);
+        draw_flop(a, ctx, x1, y1, x2, y2, r);
+        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        console.log(a);
+    }
 
     // a = wasm.other_rounds_from_js(a);
 
@@ -432,4 +441,4 @@ function m() {
     // console.log(b)
 
 }
-//draw_next_button();
+draw_next_button();
