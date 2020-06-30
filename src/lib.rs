@@ -82,6 +82,11 @@ pub fn other_rounds_from_js(game: JsValue) -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
 }
 
+/*
+FOR TESTING PURPOSES
+IMPL OF THINGS FOR PERSON STRUCT
+*/
+
 #[wasm_bindgen]
 pub fn person_to_js() -> Result<JsValue, JsValue> {
     //serde_wasm_bindgen::Error
