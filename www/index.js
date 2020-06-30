@@ -239,28 +239,28 @@ function draw_names_and_scores(game, ctx, x1, y1, x2, y2, r) {
     // player 1
     if (game["players"].length >= 1) {
         ctx.font = '30px serif';
-        ctx.fontStyle = "aqua";
+        //ctx.fontStyle = "aqua";
         ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
         ctx.fillText(game["players"][0]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 - 15);
     }
     // player 2
     if (game["players"].length >= 2) {
         ctx.font = '30px serif';
-        ctx.fontStyle = "aqua";
+        //ctx.fontStyle = "aqua";
         ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
         ctx.fillText(game["players"][1]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
     }
     // player 3
     if (game["players"].length >= 3) {
         ctx.font = '30px serif';
-        ctx.fontStyle = "aqua";
+        //ctx.fontStyle = "aqua";
         ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
         ctx.fillText(game["players"][2]["handvalue"], x2 + x1, y2 / 2 + y1 + 30);
     }
     // player 4
     if (game["players"].length >= 4) {
         ctx.font = '30px serif';
-        ctx.fontStyle = "aqua";
+        //ctx.fontStyle = "#00ff00";
         ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
         ctx.fillText(game["players"][3]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
     }
@@ -268,14 +268,14 @@ function draw_names_and_scores(game, ctx, x1, y1, x2, y2, r) {
     if (game["players"].length >= 5) {
         ctx.stroke();
         ctx.font = '30px serif';
-        ctx.fontStyle = "aqua";
+        //canvas.fontStyle = "#000000";
         ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
         ctx.fillText(game["players"][4]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
     }
     // player 6
     if (game["players"].length >= 6) {
         ctx.font = '30px serif';
-        ctx.fontStyle = "aqua";
+        //ctx.fontStyle = "#00ff00";
         ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
         ctx.fillText(game["players"][5]["handvalue"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
     }
@@ -370,6 +370,13 @@ function draw_winner(game, ctx) {
 }
 
 //function drawCards() { }
+
+var button1 = document.getElementById("player0");
+button1.style = "position: absolute; top:300px; left:200px";
+// button1.onclick = "myFunction()";
+var moves0 = document.getElementById("moves0");
+moves0.style = "position: absolute; top:100px; left:500px"
+
 
 var canvas = document.getElementById('canvas');
 const c_height = canvas.height;

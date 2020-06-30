@@ -21,11 +21,19 @@
     <img src="http://willsloan.com/cards/aceofdiamonds.png">
     -->
   <div class="d-flex justify-content-center border border-primary p-5">
-    <!-- <form action="/index.js">
-      <button style="position: absolute; top:200px; left:20px;" type="button" class="border border-warning">Show Next
-        Card</button>
-    </form> -->
-    <canvas id="canvas" height="640" width="1280" class="border border-warning"></canvas>
+    <!-- <form action="/index.js"> -->
+    <button id="player0" type="button" class="border border-warning">Show Next
+      Card</button>
+    <label for="moves0">Choose Move: </label>
+    <select name="moves0" id="moves0">
+      <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="mercedes">Mercedes</option>
+      <option value="audi">Audi</option>
+    </select>
+    <!-- style="position: absolute; top:200px; left:20px;" -->
+    <!-- </form> -->
+    <canvas id="canvas" height="840" width="1680" class="border border-warning"></canvas>
   </div>
 
   <!-- JavaScript -->
