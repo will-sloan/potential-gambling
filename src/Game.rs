@@ -15,7 +15,7 @@ pub struct Game {
     //pub num: u8,
     pub pool: u32,
     pub flop: Vec<Card>,
-    pub winner: String,
+    pub winner: Player,
 }
 
 pub fn shuffle_deck(deck: &mut Vec<Card>) {
@@ -128,10 +128,22 @@ impl Game {
             players: Vec::new(),
             pool: 0,
             flop: Vec::new(),
-            winner: String::from(""),
+            winner: Player {
+                cards: Vec::new(),
+                chips: 0,
+                ip: String::from("Not A Player"),
+                folded: true,
+                handvalue: 9999,
+            },
         }
     }
-
+    /*
+        pub cards: Vec<Card>,
+        pub chips: u32,
+        pub ip: String,
+        pub folded: bool,
+        pub handvalue: u32,
+    */
     pub fn deal_to_players(&mut self) {
         // goes puts all cards from players into deck
         // Shuffles the cards
@@ -189,23 +201,29 @@ impl Game {
     */
     pub fn check_cards(&mut self) {
         // both the player cards and the flop cards
-        let mut winning_player = String::from("ERRRR");
+        let mut winning_player = Player {
+            cards: Vec::new(),
+            chips: 0,
+            ip: String::from("Not A Player"),
+            folded: true,
+            handvalue: 9999,
+        };
         let mut current_best = 9999;
         let mut p_and_f: Vec<Card> = Vec::new();
-        web_sys::console::log_1(&"after winning_player".into());
+        //web_sys::console::log_1(&"after winning_player".into());
         for index in 0..self.players.len() {
             p_and_f = self.players[index].cards.clone();
             p_and_f.append(&mut self.flop.clone());
             let mut personal_best = 9999; // high is worse!
             let mut sub_hand = vec![0, 0, 0, 0, 0];
-            web_sys::console::log_1(&format!("after creating hand: {:#?}", &p_and_f).into());
+            //web_sys::console::log_1(&format!("after creating hand: {:#?}", &p_and_f).into());
             for x in 0..21 {
-                web_sys::console::log_1(&format!("X: {}", &x).into());
+                //web_sys::console::log_1(&format!("X: {}", &x).into());
                 for y in 0..5 {
-                    web_sys::console::log_1(&format!("Y: {}", &y).into());
+                    //web_sys::console::log_1(&format!("Y: {}", &y).into());
                     sub_hand[y] = p_and_f[arrays::perm7[x][y] as usize].card;
                 }
-                web_sys::console::log_1(&format!("Subhand: {:#?}", &sub_hand).into());
+                //web_sys::console::log_1(&format!("Subhand: {:#?}", &sub_hand).into());
                 let v = eval_5cards(
                     sub_hand[0],
                     sub_hand[1],
@@ -213,10 +231,10 @@ impl Game {
                     sub_hand[3],
                     sub_hand[4],
                 );
-                web_sys::console::log_1(&format!("V: {}", &v).into());
+                //web_sys::console::log_1(&format!("V: {}", &v).into());
                 if v < personal_best {
                     personal_best = v;
-                    web_sys::console::log_1(&format!("New best: {}", &personal_best).into());
+                    //web_sys::console::log_1(&format!("New best: {}", &personal_best).into());
                 }
             }
             /*
@@ -232,14 +250,14 @@ impl Game {
                 p_and_f[4].card,
             );
             */
-            if personal_best < current_best {
-                winning_player = self.players[index].ip.clone();
-                current_best = personal_best;
-            }
             self.players[index].handvalue = personal_best;
             p_and_f.clear();
+            if personal_best < current_best {
+                winning_player = self.players[index].clone();
+                current_best = personal_best;
+            }
         }
-        self.winner = winning_player;
+        self.winner = winning_player.clone();
     }
 
     pub fn do_flop(&mut self) {

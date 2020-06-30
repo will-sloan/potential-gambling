@@ -352,8 +352,11 @@ function draw_flop(game, ctx, x1, y1, x2, y2, r) {
     */
 }
 
-function doFourthCard(game, ctx, x1, y1, x2, y2, r) {
-
+function draw_winner(game, ctx) {
+    const rect = canvas.getBoundingClientRect();
+    ctx.font = '30px serif';
+    ctx.fontStyle = "aqua";
+    ctx.fillText(game["winner"]["ip"] + " wins with score " + game["winner"]["handvalue"], 50, 50);
 }
 
 //function drawCards() { }
@@ -375,15 +378,17 @@ var number_of_player = 6;
 // console.log(window_height);
 // console.log(window_width);
 var a = wasm.start_game_from_js(number_of_player);
-a = wasm.flop_round_from_js(a);
-a = wasm.other_rounds_from_js(a);
-a = wasm.other_rounds_from_js(a);
-a = wasm.end_game(a);
 console.log(a);
-drawMainTable(ctx, x1, y1, x2, y2, r);
-draw_players(a, ctx, x1, y1, x2, y2, r);
-draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-draw_flop(a, ctx, x1, y1, x2, y2, r);
+// a = wasm.flop_round_from_js(a);
+// a = wasm.other_rounds_from_js(a);
+// a = wasm.other_rounds_from_js(a);
+// a = wasm.end_game(a);
+// console.log(a);
+// drawMainTable(ctx, x1, y1, x2, y2, r);
+// draw_players(a, ctx, x1, y1, x2, y2, r);
+// draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+// draw_flop(a, ctx, x1, y1, x2, y2, r);
+m();
 function m() {
     if (current_pos == 0) {
         drawMainTable(ctx, x1, y1, x2, y2, r);
@@ -421,6 +426,7 @@ function m() {
         draw_players(a, ctx, x1, y1, x2, y2, r);
         draw_flop(a, ctx, x1, y1, x2, y2, r);
         draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+        draw_winner(a, ctx, x1, y1, x2, y2, r)
         console.log(a);
     }
 

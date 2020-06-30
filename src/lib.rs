@@ -66,11 +66,11 @@ pub fn start_game_from_js(num_p: JsValue) -> Result<JsValue, JsValue> {
 }
 #[wasm_bindgen]
 pub fn flop_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
-    web_sys::console::log_1(&"Hello".into());
+    //web_sys::console::log_1(&"Hello".into());
     let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
-    web_sys::console::log_1(&"h1".into());
+    //web_sys::console::log_1(&"h1".into());
     game.do_flop();
-    web_sys::console::log_1(&"h2".into());
+    //web_sys::console::log_1(&"h2".into());
     serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
 }
 
