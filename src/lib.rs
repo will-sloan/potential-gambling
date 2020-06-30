@@ -70,6 +70,7 @@ pub fn flop_round_from_js(game: JsValue) -> Result<JsValue, JsValue> {
     let mut game: Game::Game = serde_wasm_bindgen::from_value(game)?;
     //web_sys::console::log_1(&"h1".into());
     game.do_flop();
+    game.flop_check();
     //web_sys::console::log_1(&"h2".into());
     serde_wasm_bindgen::to_value(&game).map_err(|err| err.into())
 }

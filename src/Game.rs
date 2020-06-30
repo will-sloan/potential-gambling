@@ -199,6 +199,57 @@ impl Game {
     }
 
     */
+    pub fn flop_check(&mut self) {
+        let mut winning_player = Player {
+            cards: Vec::new(),
+            chips: 0,
+            ip: String::from("Not A Player"),
+            folded: true,
+            handvalue: 9999,
+        };
+        let mut current_best = 9999;
+        let mut p_and_f: Vec<Card> = Vec::new();
+        //web_sys::console::log_1(&"after winning_player".into());
+        for index in 0..self.players.len() {
+            p_and_f = self.players[index].cards.clone();
+            p_and_f.append(&mut self.flop.clone());
+            //let mut personal_best = 9999; // high is worse!
+            //let mut sub_hand = vec![0, 0, 0, 0, 0];
+            //web_sys::console::log_1(&format!("after creating hand: {:#?}", &p_and_f).into());
+            let v = eval_5cards(
+                p_and_f[0].card,
+                p_and_f[1].card,
+                p_and_f[2].card,
+                p_and_f[3].card,
+                p_and_f[4].card,
+            );
+            //web_sys::console::log_1(&format!("V: {}", &v).into());
+            //if v < personal_best {
+            //  personal_best = v;
+            //web_sys::console::log_1(&format!("New best: {}", &personal_best).into());
+            //}
+            /*
+            web_sys::console::log_1(&format!("in for loop: {}", index).into());
+            p_and_f = self.players[index].cards.clone();
+            p_and_f.append(&mut self.flop);
+            web_sys::console::log_1(&format!("after creating one hand: {:#?}", p_and_f).into());
+            let v = eval_5cards(
+                p_and_f[0].card,
+                p_and_f[1].card,
+                p_and_f[2].card,
+                p_and_f[3].card,
+                p_and_f[4].card,
+            );
+            */
+            self.players[index].handvalue = v;
+            p_and_f.clear();
+            if v < current_best {
+                winning_player = self.players[index].clone();
+                current_best = v;
+            }
+        }
+        self.winner = winning_player.clone();
+    }
     pub fn check_cards(&mut self) {
         // both the player cards and the flop cards
         let mut winning_player = Player {
