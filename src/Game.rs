@@ -1,10 +1,12 @@
 use rand::seq::SliceRandom;
 use rand::thread_rng;
-use std::collections::HashMap;
+//use std::collections::HashMap;
 
-use serde::de::{self, Deserialize, Deserializer, MapAccess, SeqAccess, Visitor};
+use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use std::fmt;
+
+mod arrays;
 
 #[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
 pub struct Game {
@@ -20,105 +22,114 @@ pub fn shuffle_deck(deck: &mut Vec<Card>) {
     deck.shuffle(&mut thread_rng());
 }
 
-fn create_url(suit: u8, number: u8) -> String {
+fn create_url(num: &u32) -> String {
     let mut s = "http://willsloan.com/cards/".to_string();
-    match number {
-        0 => s.push_str("two"),
-        1 => s.push_str("three"),
-        2 => s.push_str("four"),
-        3 => s.push_str("five"),
-        4 => s.push_str("six"),
-        5 => s.push_str("seven"),
-        6 => s.push_str("eight"),
-        7 => s.push_str("nine"),
-        8 => s.push_str("ten"),
-        9 => s.push_str("jack"),
-        10 => s.push_str("queen"),
-        11 => s.push_str("king"),
-        12 => s.push_str("ace"),
+    let a = num.clone();
+    match a {
+        x if (x >> 16) & 0x0001 != 0 => s.push_str("two"), //1 -> 2
+        x if (x >> 16) & 0x0002 != 0 => s.push_str("three"), //2 -> 3
+        x if (x >> 16) & 0x0004 != 0 => s.push_str("four"), //4 -> 4
+        x if (x >> 16) & 0x0008 != 0 => s.push_str("five"), //8 -> 5
+        x if (x >> 16) & 0x0010 != 0 => s.push_str("six"), //16 -> 6
+        x if (x >> 16) & 0x0020 != 0 => s.push_str("seven"), //32 -> 7
+        x if (x >> 16) & 0x0040 != 0 => s.push_str("eight"), //64 -> 8
+        x if (x >> 16) & 0x0080 != 0 => s.push_str("nine"), // 128 -> 9
+        x if (x >> 16) & 0x0100 != 0 => s.push_str("ten"), // 256 -> 10
+        x if (x >> 16) & 0x0200 != 0 => s.push_str("jack"), // 512 -> J
+        x if (x >> 16) & 0x0400 != 0 => s.push_str("queen"), // 1024 -> Q
+        x if (x >> 16) & 0x0800 != 0 => s.push_str("king"), // 2048 -> K
+        x if (x >> 16) & 0x1000 != 0 => s.push_str("ace"), // 4096 -> A
         _ => panic!("Error trying to add card number to url!"),
     }
-    s.push_str("of");
-    match suit {
-        0 => s.push_str("hearts"),
-        1 => s.push_str("clubs"),
-        2 => s.push_str("diamonds"),
-        3 => s.push_str("spades"),
+    let b = num.clone();
+    match b {
+        x if (x & 0x8000) != 0 => s.push_str("clubs"),
+        x if (x & 0x4000) != 0 => s.push_str("diamonds"),
+        x if (x & 0x2000) != 0 => s.push_str("hearts"),
+        x if (x & 0x1000) != 0 => s.push_str("spades"),
         _ => panic!("Error trying to add suit to url!"),
     }
     s.push_str(".png");
     s
+}
+fn findit(key: u32) -> u32 {
+    // let mut low: usize = 0;
+    // let mut high: usize = 4887;
+    // let mut mid: usize;
+    // CODE BELOW WORKED AT SOME POINT!!!
+    // let spot = arrays::products.binary_search(&key).unwrap();
+    // spot as u32
+    // CODE BELOW MIGHT NOT WORK!!!
+    arrays::products.binary_search(&key).unwrap() as u32
+}
+
+fn eval_5cards(c1: u32, c2: u32, c3: u32, c4: u32, c5: u32) -> u32 {
+    // not my comments!!! These are the comments that were in Cactus Kev's c program
+
+    // High the value, the lower the hand value!
+    let mut q: u32;
+    let s: u32;
+
+    q = (c1 | c2 | c3 | c4 | c5) >> 16;
+
+    // check for Flushes and StraightFlushes
+    if c1 & c2 & c3 & c4 & c5 & 0xF000 != 0 {
+        return arrays::flushes[q as usize];
+    }
+    // check for Straights and HighCard hands
+    s = arrays::unique5[q as usize];
+    if s != 0 {
+        return s;
+    };
+
+    // let's do it the hard way
+    q = (c1 & 0xFF) * (c2 & 0xFF) * (c3 & 0xFF) * (c4 & 0xFF) * (c5 & 0xFF);
+    q = findit(q);
+
+    return arrays::values[q as usize];
 }
 
 impl Game {
     // used only at the start of the game
     pub fn new_game() -> Game {
         //, num_players: u8
-        let num_players: u8 = 2;
-        let mut deck: Vec<Card> = Vec::new();
-        let mut players: Vec<Player> = Vec::new();
-        for i in 0..4 {
-            for j in 0..13 {
-                match i {
-                    0 => deck.push(Card {
-                        suit: 0,
-                        number: j,
-                        link: create_url(i, j),
-                    }),
-                    1 => deck.push(Card {
-                        suit: 1,
-                        number: j,
-                        link: create_url(i, j),
-                    }),
-                    2 => deck.push(Card {
-                        suit: 2,
-                        number: j,
-                        link: create_url(i, j),
-                    }),
-                    3 => deck.push(Card {
-                        suit: 3,
-                        number: j,
-                        link: create_url(i, j),
-                    }),
-                    _ => deck.push(Card {
-                        suit: 4,
-                        number: 69,
-                        link: "error_making_card".to_string(),
-                    }),
-                }
+        let mut deck: [u32; 52] = [0; 52];
+        let mut i: u32 = 0;
+        let mut j: u32 = 0;
+        let mut n: u32 = 0;
+        let mut suit: u32 = 0x8000;
+        while i < 4 {
+            //println!();
+            //println!("I is: {}", i);
+            while j < 13 {
+                //println!("J is: {}", j);
+                deck[n as usize] =
+                    (arrays::primes[j as usize] | ((j as u32) << 8) | suit | (1 << (16 + j)))
+                        .into();
+                j += 1;
+                n += 1;
             }
+            j = 0;
+            i += 1;
+            suit >>= 1;
         }
-
+        //println!("Done in init_deck");
+        let mut d: Vec<Card> = Vec::new();
+        for a in deck.iter() {
+            d.push(Card {
+                card: a.clone(),
+                link: create_url(&a),
+            })
+        }
         //shuffle_deck(&mut deck);
         Game {
-            deck,
-            players,
+            deck: d,
+            players: Vec::new(),
             pool: 0,
             flop: Vec::new(),
             winner: String::from(""),
         }
     }
-    // Used after the hand is done
-    // pub fn cont_game(&self, players: Vec<Player>, deck: &mut Vec<Card>, pool: u32) -> Game {
-    //     let counter = 0;
-    //     let mut new_player: Vec<Player> = Vec::new();
-    //     for player in players {
-    //         deck.push(player.cards[0].clone());
-    //         deck.push(player.cards[1]);
-    //     }
-    //     shuffle_deck(deck);
-
-    //     for player_num in 0..counter {
-    //         new_player[player_num].cards.push(deck.pop().unwrap());
-    //     }
-    //     Game {
-    //         deck: deck.to_vec(),
-    //         players: new_player,
-    //         pool,
-    //         flop: Vec::new(),
-    //         winner: String::from(""),
-    //     }
-    // }
 
     pub fn deal_to_players(&mut self) {
         // goes puts all cards from players into deck
@@ -157,38 +168,27 @@ impl Game {
         }
     }
 
-    pub fn check_cards(&mut self) -> String {
-        let mut points: HashMap<Player, u8> = HashMap::new();
+    pub fn check_cards(&mut self) {
+        // both the player cards and the flop cards
+        let winning_player = String::new();
+        let current_best = 0;
         for index in 0..self.players.len() {
-            let cardone = self.players[index].cards.first().unwrap().number;
-            let cardtwo = self.players[index].cards.last().unwrap().number;
-            if cardone > cardtwo {
-                self.players[index].highcard = cardone;
-            } else {
-                self.players[index].highcard = cardtwo;
+            let p_and_f = self.players[index].cards.clone();
+            p_and_f.append(&mut self.flop);
+            let v = eval_5cards(
+                p_and_f[0].card,
+                p_and_f[1].card,
+                p_and_f[2].card,
+                p_and_f[3].card,
+                p_and_f[4].card,
+            );
+            if v > current_best {
+                winning_player = self.players[index].ip;
+                current_best = v;
             }
-            let flush = check_flush(&self.players[index].cards, &self.flop.clone());
-            let straight = check_straight(&self.players[index].cards, &self.flop.clone());
-            let pairs = check_pairs(&self.players[index].cards, &self.flop.clone());
-
-            let value_of_hand = [flush, straight, pairs, cardone, cardtwo]
-                .iter()
-                .max()
-                .unwrap()
-                .clone();
-            self.players[index].hand = value_of_hand;
-            points.insert(self.players[index].clone(), value_of_hand);
+            self.players[index].handvalue = v;
         }
-        let mut max_player = self.players.first().unwrap();
-        let mut max_val = 0;
-        for (k, v) in points.iter() {
-            if *v > max_val as u8 {
-                max_player = k;
-                max_val = *v;
-            }
-        }
-
-        return max_player.ip.clone();
+        self.winner = winning_player;
     }
 
     pub fn do_flop(&mut self) {
@@ -199,118 +199,6 @@ impl Game {
 
     pub fn flip_one(&mut self) {
         self.flop.push(self.deck.pop().unwrap());
-    }
-}
-fn check_pairs(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
-    let mut temp_hand = hand.clone();
-    let mut temp_flop = flop.clone();
-    temp_hand.append(&mut temp_flop);
-    // Hashmap to store the number of occuances of each number
-    let mut count_of_each_card: HashMap<u8, u8> = HashMap::new();
-
-    for card in temp_hand {
-        let count = count_of_each_card.entry(card.number).or_insert(0);
-        *count += 1;
-    }
-
-    let mut vals = count_of_each_card.values().collect::<Vec<&u8>>();
-    vals.sort_by(|a, b| b.cmp(a));
-    //println!("{:?}", count_of_each_card);
-    /*
-    Possible Combos:
-    Four of a kind: max_val[0] == 4
-    Full house: max_val[0] == 3 and max_val == 2
-    3 of a kind: max_val[0] == 3
-    2 pair: max_val[0] && max_val[1] == 2
-    pair: max_val[0] == 2
-    */
-    if vals.len() > 1 {
-        if *vals[0] == 4 {
-            19 as u8
-        } else if *vals[0] == 3 && *vals[1] >= 2 {
-            // could be another 3 cards
-            18 as u8
-        } else if *vals[0] == 3 {
-            15 as u8
-        } else if *vals[0] == 2 && *vals[1] == 2 {
-            14 as u8
-        } else if *vals[0] == 2 {
-            13 as u8
-        } else {
-            0 as u8
-        }
-    } else {
-        if *vals[0] == 4 {
-            19 as u8
-        } else if *vals[0] == 3 {
-            15 as u8
-        } else if *vals[0] == 2 {
-            13 as u8
-        } else {
-            0 as u8
-        }
-    }
-}
-
-fn check_straight(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
-    let mut temp_group: Vec<u8> =
-        [hand.last().unwrap().number, hand.first().unwrap().number].to_vec();
-    let a = temp_group.contains(&12); // check 1,2,3,4,5 and 10,11,12,13,14
-    for i in flop {
-        temp_group.push(i.number);
-    }
-    if temp_group.len() >= 5 {
-        temp_group.sort();
-        if a {
-            // then check 1,2,3,4,5 explicitly
-            for i in 0..5 {
-                if i as u8 != temp_group[i] {
-                    return 0;
-                }
-            }
-            return 16;
-        }
-        for i in 0..temp_group.len() - 2 {
-            if (i + 1) as u8 != temp_group[i + 1] {
-                return 0;
-            }
-        }
-        return 16;
-    } else {
-        return 0;
-    }
-}
-
-fn check_flush(hand: &Vec<Card>, flop: &Vec<Card>) -> u8 {
-    let straight = check_straight(hand, flop) == 16;
-    let mut cards: Vec<u8> = [hand.first().unwrap().suit, hand.last().unwrap().suit].to_vec();
-    for i in flop {
-        cards.push(i.suit);
-    }
-    let mut count_of_each_card: HashMap<u8, u8> = HashMap::new();
-
-    for card in cards {
-        let count = count_of_each_card.entry(card).or_insert(0);
-        *count += 1;
-    }
-
-    let mut vals = count_of_each_card.values().collect::<Vec<&u8>>();
-    vals.sort_by(|a, b| b.cmp(a));
-
-    if vals.is_empty() {
-        0
-    } else {
-        match *vals[0] {
-            x if x >= 5 && straight => {
-                //println!("{:?}", vals);
-                21
-            }
-            x if x >= 5 => {
-                //web_sys::console::log(&vals.into());
-                17
-            }
-            _ => 0,
-        }
     }
 }
 
@@ -461,8 +349,7 @@ The Start the area for Card
 
 #[derive(Debug, Eq, PartialEq, Clone, Ord, PartialOrd, Hash)]
 pub struct Card {
-    pub suit: u8,
-    pub number: u8,
+    pub card: u32,
     pub link: String,
 }
 
@@ -471,9 +358,8 @@ impl Serialize for Card {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Card", 3)?;
-        s.serialize_field("number", &self.number)?;
-        s.serialize_field("suit", &self.suit)?;
+        let mut s = serializer.serialize_struct("Card", 2)?;
+        s.serialize_field("card", &self.card)?;
         s.serialize_field("link", &self.link)?;
         //s.serialize_field("num", &self.num)?;
         s.end()
@@ -485,8 +371,7 @@ impl<'de> Deserialize<'de> for Card {
         D: Deserializer<'de>,
     {
         enum Field {
-            Suit,
-            Number,
+            Card,
             Link,
         };
 
@@ -501,7 +386,7 @@ impl<'de> Deserialize<'de> for Card {
                     type Value = Field;
 
                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                        formatter.write_str("`suit` or `number` or `link`")
+                        formatter.write_str("`card` or `link`")
                     }
 
                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
@@ -509,8 +394,7 @@ impl<'de> Deserialize<'de> for Card {
                         E: de::Error,
                     {
                         match value {
-                            "suit" => Ok(Field::Suit),
-                            "number" => Ok(Field::Number),
+                            "card" => Ok(Field::Card),
                             "link" => Ok(Field::Link),
                             _ => Err(de::Error::unknown_field(value, FIELDS)),
                         }
@@ -534,22 +418,15 @@ impl<'de> Deserialize<'de> for Card {
             where
                 V: MapAccess<'de>,
             {
-                let mut suit = None;
-                let mut number = None;
+                let mut card = None;
                 let mut link = None;
                 while let Some(key) = map.next_key()? {
                     match key {
-                        Field::Suit => {
-                            if suit.is_some() {
-                                return Err(de::Error::duplicate_field("suit"));
+                        Field::Card => {
+                            if card.is_some() {
+                                return Err(de::Error::duplicate_field("card"));
                             }
-                            suit = Some(map.next_value()?);
-                        }
-                        Field::Number => {
-                            if number.is_some() {
-                                return Err(de::Error::duplicate_field("number"));
-                            }
-                            number = Some(map.next_value()?);
+                            card = Some(map.next_value()?);
                         }
                         Field::Link => {
                             if link.is_some() {
@@ -559,14 +436,13 @@ impl<'de> Deserialize<'de> for Card {
                         }
                     }
                 }
-                let suit = suit.ok_or_else(|| de::Error::missing_field("suit"))?;
-                let number = number.ok_or_else(|| de::Error::missing_field("number"))?;
+                let card = card.ok_or_else(|| de::Error::missing_field("card"))?;
                 let link = link.ok_or_else(|| de::Error::missing_field("link"))?;
-                Ok(Card { suit, number, link })
+                Ok(Card { card, link })
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["suit", "number", "link"];
+        const FIELDS: &'static [&'static str] = &["card", "link"];
         deserializer.deserialize_struct("Card", FIELDS, DurationVisitor)
     }
 }
@@ -587,8 +463,7 @@ pub struct Player {
     pub chips: u32,
     pub ip: String,
     pub folded: bool,
-    pub hand: u8, // value of players hand
-    pub highcard: u8,
+    pub handvalue: u32,
 }
 
 impl Serialize for Player {
@@ -596,13 +471,12 @@ impl Serialize for Player {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Player", 6)?;
+        let mut s = serializer.serialize_struct("Player", 5)?;
         s.serialize_field("cards", &self.cards)?;
         s.serialize_field("chips", &self.chips)?;
         s.serialize_field("ip", &self.ip)?;
         s.serialize_field("folded", &self.folded)?;
-        s.serialize_field("hand", &self.hand)?;
-        s.serialize_field("highcard", &self.highcard)?;
+        s.serialize_field("hand_value", &self.handvalue)?;
         //s.serialize_field("num", &self.num)?;
         s.end()
     }
@@ -618,8 +492,7 @@ impl<'de> Deserialize<'de> for Player {
             Chips,
             Ip,
             Folded,
-            Hand,
-            Highcard,
+            Handvalue,
         };
 
         impl<'de> Deserialize<'de> for Field {
@@ -633,9 +506,7 @@ impl<'de> Deserialize<'de> for Player {
                     type Value = Field;
 
                     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                        formatter.write_str(
-                            "`cards` or `chips` or `ip` or `folded` or `hand` or `highcard`",
-                        )
+                        formatter.write_str("`cards` or `chips` or `ip` or `folded` or `handvalue`")
                     }
 
                     fn visit_str<E>(self, value: &str) -> Result<Field, E>
@@ -647,8 +518,7 @@ impl<'de> Deserialize<'de> for Player {
                             "chips" => Ok(Field::Chips),
                             "ip" => Ok(Field::Ip),
                             "folded" => Ok(Field::Folded),
-                            "hand" => Ok(Field::Hand),
-                            "highcard" => Ok(Field::Highcard),
+                            "handvalue" => Ok(Field::Handvalue),
                             _ => Err(de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -675,8 +545,7 @@ impl<'de> Deserialize<'de> for Player {
                 let mut chips = None;
                 let mut ip = None;
                 let mut folded = None;
-                let mut hand = None;
-                let mut highcard = None;
+                let mut handvalue = None;
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::Cards => {
@@ -703,17 +572,11 @@ impl<'de> Deserialize<'de> for Player {
                             }
                             folded = Some(map.next_value()?);
                         }
-                        Field::Hand => {
-                            if hand.is_some() {
-                                return Err(de::Error::duplicate_field("hand"));
+                        Field::Handvalue => {
+                            if handvalue.is_some() {
+                                return Err(de::Error::duplicate_field("handvalue"));
                             }
-                            hand = Some(map.next_value()?);
-                        }
-                        Field::Highcard => {
-                            if highcard.is_some() {
-                                return Err(de::Error::duplicate_field("highcard"));
-                            }
-                            highcard = Some(map.next_value()?);
+                            handvalue = Some(map.next_value()?);
                         }
                     }
                 }
@@ -721,21 +584,18 @@ impl<'de> Deserialize<'de> for Player {
                 let chips = chips.ok_or_else(|| de::Error::missing_field("chips"))?;
                 let ip = ip.ok_or_else(|| de::Error::missing_field("ip"))?;
                 let folded = folded.ok_or_else(|| de::Error::missing_field("folded"))?;
-                let hand = hand.ok_or_else(|| de::Error::missing_field("hand"))?;
-                let highcard = highcard.ok_or_else(|| de::Error::missing_field("highcard"))?;
+                let handvalue = handvalue.ok_or_else(|| de::Error::missing_field("handvalue"))?;
                 Ok(Player {
                     cards,
                     chips,
                     ip,
                     folded,
-                    hand,
-                    highcard,
+                    handvalue,
                 })
             }
         }
 
-        const FIELDS: &'static [&'static str] =
-            &["cards", "chips", "ip", "folded", "hand", "highcard"];
+        const FIELDS: &'static [&'static str] = &["cards", "chips", "ip", "folded", "handvalue"];
         deserializer.deserialize_struct("Player", FIELDS, DurationVisitor)
     }
 }

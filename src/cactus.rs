@@ -20,137 +20,137 @@ mod arrays;
 // extern "C" {
 //     fn abs(input: i32) -> i32;
 // }
-fn main() {
-    // unsafe {
-    //     println!("Absolute value of -3 according to C: {}", abs(-3));
-    // }
+// fn main() {
+//     // unsafe {
+//     //     println!("Absolute value of -3 according to C: {}", abs(-3));
+//     // }
 
-    let value_str = vec![
-        "",
-        "Straight Flush",
-        "Four of a Kind",
-        "Full House",
-        "Flush",
-        "Straight",
-        "Three of a Kind",
-        "Two Pair",
-        "One Pair",
-        "High Card",
-    ];
-    //let (deck, hand, freq): ([u32;52], [u32,5], [u32;10]) = ([0;52], [0;5], [0;10]);
-    let mut deck: [u32; 52] = [0; 52];
-    let mut hand: [u32; 5] = [0; 5];
-    let mut freq: [u32; 10] = [0; 10];
-    //let (mut a, mut b, mut c, mut d, mut e, mut i, mut j): (u32, u32, u32, u32, u32, u32, u32) = (0, 0, 0, 0, 0, 0, 0);
-    //int a, b, c, d, e, i, j;
+//     let value_str = vec![
+//         "",
+//         "Straight Flush",
+//         "Four of a Kind",
+//         "Full House",
+//         "Flush",
+//         "Straight",
+//         "Three of a Kind",
+//         "Two Pair",
+//         "One Pair",
+//         "High Card",
+//     ];
+//     //let (deck, hand, freq): ([u32;52], [u32,5], [u32;10]) = ([0;52], [0;5], [0;10]);
+//     let mut deck: [u32; 52] = [0; 52];
+//     let mut hand: [u32; 5] = [0; 5];
+//     let mut freq: [u32; 10] = [0; 10];
+//     //let (mut a, mut b, mut c, mut d, mut e, mut i, mut j): (u32, u32, u32, u32, u32, u32, u32) = (0, 0, 0, 0, 0, 0, 0);
+//     //int a, b, c, d, e, i, j;
 
-    // Seed the random number generator.
-    //srand48(getpid());
+//     // Seed the random number generator.
+//     //srand48(getpid());
 
-    // Initialize the deck.
-    let deck = init_deck();
+//     // Initialize the deck.
+//     let deck = init_deck();
 
-    // for (i, val) in deck.iter().enumerate() {
-    //     println!("{} {}", i, val);
-    // }
-    //println!("1");
-    // Zero out the frequency array.
-    for i in 0..freq.len() {
-        freq[i] = 0;
-    }
-    //println!("2");
-    // for (i = 0; i < 10; i++)
-    // 	freq[i] = 0;
-    let mut i: u32 = 0;
-    let mut j: u32 = 0;
-    //println!("3");
-    // for a in 0..48 {
-    //     hand[0] = deck[a];
-    //     let mut b = a + 1;
-    //     while b < 49 {
-    //         let mut c = b + 1;
-    //         while c < 50 {
-    //             let mut d = c + 1;
-    //             while d < 51 {
-    //                 let mut e = d + 1;
-    //                 while e < 52 {
-    //                     hand[4] = deck[e];
-    //                     i = eval_5cards(hand[0], hand[0], hand[0], hand[0], hand[0]);
-    //                     j = hand_rank(i);
-    //                     freq[j as usize] += 1;
-    //                     e += 1;
-    //                 }
-    //                 d += 1;
-    //             }
-    //             c += 1;
-    //         }
-    //         b += 1;
-    //     }
-    // }
-    for i1 in 0..52 {
-        //println!("5 part: {}", i1);
-        for i2 in (i1 + 1)..52 {
-            //println!("i2: {}", i2);
-            for i3 in (i2 + 1)..52 {
-                //println!("i3: {}", i3);
-                for i4 in (i3 + 1)..52 {
-                    //println!("i4: {}", i4);
-                    for i5 in (i4 + 1)..52 {
-                        //println!("i1: {} i2: {} i3: {} i4 {} i5: {}", i1, i2, i3, i4, i5);
-                        hand[0] = deck[i1];
-                        hand[1] = deck[i2];
-                        hand[2] = deck[i3];
-                        hand[3] = deck[i4];
-                        hand[4] = deck[i5];
-                        //println!("hand is: {:?}", hand);
-                        let i = eval_5cards(hand[0], hand[1], hand[2], hand[3], hand[4]);
-                        //println!("I is after eval_5: {}", i);
-                        let j = hand_rank(i);
-                        //println!("j is after hand_rank: {}", j);
-                        freq[j as usize] += 1;
+//     // for (i, val) in deck.iter().enumerate() {
+//     //     println!("{} {}", i, val);
+//     // }
+//     //println!("1");
+//     // Zero out the frequency array.
+//     for i in 0..freq.len() {
+//         freq[i] = 0;
+//     }
+//     //println!("2");
+//     // for (i = 0; i < 10; i++)
+//     // 	freq[i] = 0;
+//     let mut i: u32 = 0;
+//     let mut j: u32 = 0;
+//     //println!("3");
+//     // for a in 0..48 {
+//     //     hand[0] = deck[a];
+//     //     let mut b = a + 1;
+//     //     while b < 49 {
+//     //         let mut c = b + 1;
+//     //         while c < 50 {
+//     //             let mut d = c + 1;
+//     //             while d < 51 {
+//     //                 let mut e = d + 1;
+//     //                 while e < 52 {
+//     //                     hand[4] = deck[e];
+//     //                     i = eval_5cards(hand[0], hand[0], hand[0], hand[0], hand[0]);
+//     //                     j = hand_rank(i);
+//     //                     freq[j as usize] += 1;
+//     //                     e += 1;
+//     //                 }
+//     //                 d += 1;
+//     //             }
+//     //             c += 1;
+//     //         }
+//     //         b += 1;
+//     //     }
+//     // }
+//     for i1 in 0..52 {
+//         //println!("5 part: {}", i1);
+//         for i2 in (i1 + 1)..52 {
+//             //println!("i2: {}", i2);
+//             for i3 in (i2 + 1)..52 {
+//                 //println!("i3: {}", i3);
+//                 for i4 in (i3 + 1)..52 {
+//                     //println!("i4: {}", i4);
+//                     for i5 in (i4 + 1)..52 {
+//                         //println!("i1: {} i2: {} i3: {} i4 {} i5: {}", i1, i2, i3, i4, i5);
+//                         hand[0] = deck[i1];
+//                         hand[1] = deck[i2];
+//                         hand[2] = deck[i3];
+//                         hand[3] = deck[i4];
+//                         hand[4] = deck[i5];
+//                         //println!("hand is: {:?}", hand);
+//                         let i = eval_5cards(hand[0], hand[1], hand[2], hand[3], hand[4]);
+//                         //println!("I is after eval_5: {}", i);
+//                         let j = hand_rank(i);
+//                         //println!("j is after hand_rank: {}", j);
+//                         freq[j as usize] += 1;
 
-                        // mark the rank in the map
-                        //rank_count.entry(rank).or_insert(true);
-                    }
-                }
-            }
-        }
-    }
-    //println!("6");
-    for q in 1..10 {
-        println!("{}: {}", value_str[q as usize], freq[q as usize])
-    }
-    // Loop over every possible five-card hand.
-    // for (a = 0; a < 48; a++)
-    // {
-    // 	hand[0] = deck[a];
-    // 	for (b = a + 1; b < 49; b++)
-    // 	{
-    // 		hand[1] = deck[b];
-    // 		for (c = b + 1; c < 50; c++)
-    // 		{
-    // 			hand[2] = deck[c];
-    // 			for (d = c + 1; d < 51; d++)
-    // 			{
-    // 				hand[3] = deck[d];
-    // 				for (e = d + 1; e < 52; e++)
-    // 				{
-    // 					hand[4] = deck[e];
+//                         // mark the rank in the map
+//                         //rank_count.entry(rank).or_insert(true);
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     //println!("6");
+//     for q in 1..10 {
+//         println!("{}: {}", value_str[q as usize], freq[q as usize])
+//     }
+//     // Loop over every possible five-card hand.
+//     // for (a = 0; a < 48; a++)
+//     // {
+//     // 	hand[0] = deck[a];
+//     // 	for (b = a + 1; b < 49; b++)
+//     // 	{
+//     // 		hand[1] = deck[b];
+//     // 		for (c = b + 1; c < 50; c++)
+//     // 		{
+//     // 			hand[2] = deck[c];
+//     // 			for (d = c + 1; d < 51; d++)
+//     // 			{
+//     // 				hand[3] = deck[d];
+//     // 				for (e = d + 1; e < 52; e++)
+//     // 				{
+//     // 					hand[4] = deck[e];
 
-    // 					i = eval_5hand(hand);
-    // 					j = hand_rank(i);
-    // 					freq[j]++;
-    // 				}
-    // 			}
-    // 		}
-    // 	}
-    // }
+//     // 					i = eval_5hand(hand);
+//     // 					j = hand_rank(i);
+//     // 					freq[j]++;
+//     // 				}
+//     // 			}
+//     // 		}
+//     // 	}
+//     // }
 
-    // for (i = 1; i <= 9; i++)
-    // 	printf("%15s: %8d\n", value_str[i], freq[i]);
-}
+//     // for (i = 1; i <= 9; i++)
+//     // 	printf("%15s: %8d\n", value_str[i], freq[i]);
+// }
 
-fn findit(key: u32) -> u32 {
+pub fn findit(key: u32) -> u32 {
     // let mut low: usize = 0;
     // let mut high: usize = 4887;
     // let mut mid: usize;
@@ -191,7 +191,7 @@ fn findit(key: u32) -> u32 {
     //panic!("No match for key: {}", key);
 }
 
-fn init_deck() -> [u32; 52] {
+pub fn init_deck() -> [u32; 52] {
     let mut deck: [u32; 52] = [0; 52];
     let mut i: u32 = 0;
     let mut j: u32 = 0;
@@ -215,7 +215,7 @@ fn init_deck() -> [u32; 52] {
     deck
 }
 
-fn eval_5cards(c1: u32, c2: u32, c3: u32, c4: u32, c5: u32) -> u32 {
+pub fn eval_5cards(c1: u32, c2: u32, c3: u32, c4: u32, c5: u32) -> u32 {
     let mut q: u32;
     let s: u32;
 
