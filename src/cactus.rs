@@ -1,9 +1,6 @@
 #![allow(dead_code)]
 mod arrays;
 
-
-#![allow(dead_code)]
-mod arrays;
 //extern crate libc;
 
 // fn main() {
@@ -260,7 +257,6 @@ fn hand_rank(val: u32) -> u32 {
         _ => return STRAIGHT_FLUSH,                //   10 straight-flushes
     }
 }
-
 
 /*
 fn findit(key: u32) -> u32 {

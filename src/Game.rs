@@ -41,6 +41,7 @@ fn create_url(num: &u32) -> String {
         x if (x >> 16) & 0x1000 != 0 => s.push_str("ace"), // 4096 -> A
         _ => panic!("Error trying to add card number to url!"),
     }
+    s.push_str("of");
     let b = num.clone();
     match b {
         x if (x & 0x8000) != 0 => s.push_str("clubs"),
@@ -170,10 +171,10 @@ impl Game {
 
     pub fn check_cards(&mut self) {
         // both the player cards and the flop cards
-        let winning_player = String::new();
-        let current_best = 0;
+        let mut winning_player = String::new();
+        let mut current_best = 0;
         for index in 0..self.players.len() {
-            let p_and_f = self.players[index].cards.clone();
+            let mut p_and_f = self.players[index].cards.clone();
             p_and_f.append(&mut self.flop);
             let v = eval_5cards(
                 p_and_f[0].card,
@@ -183,7 +184,7 @@ impl Game {
                 p_and_f[4].card,
             );
             if v > current_best {
-                winning_player = self.players[index].ip;
+                winning_player = self.players[index].ip.clone();
                 current_best = v;
             }
             self.players[index].handvalue = v;

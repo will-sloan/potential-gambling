@@ -377,43 +377,43 @@ var number_of_player = 6;
 var a = wasm.start_game_from_js(number_of_player);
 m();
 function m() {
-    if (current_pos == 0) {
-        drawMainTable(ctx, x1, y1, x2, y2, r);
-        draw_players(a, ctx, x1, y1, x2, y2, r);
-        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-    } else if (current_pos == 1) {
-        ctx.clearRect(0, 0, c_width, c_height);
-        a = wasm.flop_round_from_js(a);
-        drawMainTable(ctx, x1, y1, x2, y2, r);
-        draw_players(a, ctx, x1, y1, x2, y2, r);
-        draw_flop(a, ctx, x1, y1, x2, y2, r);
-        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-        redraw_button();
-    } else if (current_pos == 2) {
-        a = wasm.other_rounds_from_js(a);
-        ctx.clearRect(0, 0, c_width, c_height);
-        drawMainTable(ctx, x1, y1, x2, y2, r);
-        draw_players(a, ctx, x1, y1, x2, y2, r);
-        draw_flop(a, ctx, x1, y1, x2, y2, r);
-        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-        redraw_button();
-    } else if (current_pos == 3) {
-        a = wasm.other_rounds_from_js(a);
-        ctx.clearRect(0, 0, c_width, c_height);
-        drawMainTable(ctx, x1, y1, x2, y2, r);
-        draw_players(a, ctx, x1, y1, x2, y2, r);
-        draw_flop(a, ctx, x1, y1, x2, y2, r);
-        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-        redraw_button();
-    } else {
-        // Game is done
-        ctx.clearRect(0, 0, c_width, c_height);
-        drawMainTable(ctx, x1, y1, x2, y2, r);
-        draw_players(a, ctx, x1, y1, x2, y2, r);
-        draw_flop(a, ctx, x1, y1, x2, y2, r);
-        draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
-        console.log(a);
-    }
+    //    if (current_pos == 0) {
+    drawMainTable(ctx, x1, y1, x2, y2, r);
+    draw_players(a, ctx, x1, y1, x2, y2, r);
+    //draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    // } else if (current_pos == 1) {
+    //     ctx.clearRect(0, 0, c_width, c_height);
+    //     a = wasm.flop_round_from_js(a);
+    //     drawMainTable(ctx, x1, y1, x2, y2, r);
+    //     draw_players(a, ctx, x1, y1, x2, y2, r);
+    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
+    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    //     redraw_button();
+    // } else if (current_pos == 2) {
+    //     a = wasm.other_rounds_from_js(a);
+    //     ctx.clearRect(0, 0, c_width, c_height);
+    //     drawMainTable(ctx, x1, y1, x2, y2, r);
+    //     draw_players(a, ctx, x1, y1, x2, y2, r);
+    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
+    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    //     redraw_button();
+    // } else if (current_pos == 3) {
+    //     a = wasm.other_rounds_from_js(a);
+    //     ctx.clearRect(0, 0, c_width, c_height);
+    //     drawMainTable(ctx, x1, y1, x2, y2, r);
+    //     draw_players(a, ctx, x1, y1, x2, y2, r);
+    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
+    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    //     redraw_button();
+    // } else {
+    //     // Game is done
+    //     ctx.clearRect(0, 0, c_width, c_height);
+    //     drawMainTable(ctx, x1, y1, x2, y2, r);
+    //     draw_players(a, ctx, x1, y1, x2, y2, r);
+    //     draw_flop(a, ctx, x1, y1, x2, y2, r);
+    //     draw_names_and_scores(a, ctx, x1, y1, x2, y2, r);
+    //     console.log(a);
+    // }
 
     // a = wasm.other_rounds_from_js(a);
 
