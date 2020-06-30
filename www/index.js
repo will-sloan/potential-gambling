@@ -86,23 +86,21 @@ function draw_players(game, ctx, x1, y1, x2, y2, r) {
     // // Loc of Player 1 or the topish left
     // ctx.arc(x1 + x2 / 3, y1, 4, 0, Math.PI * 2);
     // ctx.stroke();
+    if (game["players"].length >= 1) {
+        var p1_c1 = new Image();
+        p1_c1.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p1_c1, x1 + x2 / 3, y1, card_width, card_height);
+        }
+        p1_c1.src = game["players"][0]["cards"][0]["link"];
 
-
-    var p1_c1 = new Image();
-    p1_c1.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p1_c1, x1 + x2 / 3, y1, card_width, card_height);
+        var p1_c2 = new Image();
+        p1_c2.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p1_c2, x1 + x2 / 3 - card_width, y1, card_width, card_height);
+        }
+        p1_c2.src = game["players"][0]["cards"][1]["link"];
     }
-    p1_c1.src = game["players"][0]["cards"][0]["link"];
-
-    var p1_c2 = new Image();
-    p1_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p1_c2, x1 + x2 / 3 - card_width, y1, card_width, card_height);
-    }
-    p1_c2.src = game["players"][0]["cards"][1]["link"];
-
-
 
 
     // ctx.beginPath();
@@ -110,91 +108,91 @@ function draw_players(game, ctx, x1, y1, x2, y2, r) {
     // ctx.arc(x1 + x2 * 2 / 3, y1, 4, 0, Math.PI * 2);
     // ctx.stroke();
 
+    if (game["players"].length >= 2) {
+        var p2_c1 = new Image();
+        p2_c1.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p2_c1, x1 + x2 * 2 / 3, y1, card_width, card_height);
+        }
+        p2_c1.src = game["players"][1]["cards"][0]["link"];
 
-    var p2_c1 = new Image();
-    p2_c1.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p2_c1, x1 + x2 * 2 / 3, y1, card_width, card_height);
+        var p2_c2 = new Image();
+        p2_c2.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p2_c2, x1 + x2 * 2 / 3 - card_width, y1, card_width, card_height);
+        }
+
+        p2_c2.src = game["players"][1]["cards"][1]["link"];
     }
-    p2_c1.src = game["players"][1]["cards"][0]["link"];
-
-    var p2_c2 = new Image();
-    p2_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p2_c2, x1 + x2 * 2 / 3 - card_width, y1, card_width, card_height);
-    }
-
-    p2_c2.src = game["players"][1]["cards"][1]["link"];
-
 
 
     // Loc of Player 3 or the right side
     // ctx.beginPath();
     // ctx.arc(x2 + x1, y2 / 2 + y1, 4, 0, Math.PI * 2);
     // ctx.stroke();
+    if (game["players"].length >= 3) {
+        var p3_c1 = new Image();
+        p3_c1.onload = function () {
+            //ctx.rotate();
+            // 90 instead of 75 so they are completely on board
+            ctx.drawImage(p3_c1, x2 + x1 - p6andp3_similar_offset - 75, y2 / 2 + y1, card_width, card_height);
+        }
 
-    var p3_c1 = new Image();
-    p3_c1.onload = function () {
-        //ctx.rotate();
-        // 90 instead of 75 so they are completely on board
-        ctx.drawImage(p3_c1, x2 + x1 - p6andp3_similar_offset - 75, y2 / 2 + y1, card_width, card_height);
+        p3_c1.src = game["players"][2]["cards"][0]["link"];
+
+        var p3_c2 = new Image();
+        p3_c2.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p3_c2, x2 + x1 - p6andp3_similar_offset - 75, y2 / 2 + y1 - card_height, card_width, card_height);
+        }
+
+        p3_c2.src = game["players"][2]["cards"][1]["link"];
     }
-
-    p3_c1.src = game["players"][2]["cards"][0]["link"];
-
-    var p3_c2 = new Image();
-    p3_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p3_c2, x2 + x1 - p6andp3_similar_offset - 75, y2 / 2 + y1 - card_height, card_width, card_height);
-    }
-
-    p3_c2.src = game["players"][2]["cards"][1]["link"];
-
 
     // ctx.beginPath();
     // // Loc of Player 4 or the bottomish right
     // ctx.arc(x1 + x2 * 2 / 3, y1 + y2, 4, 0, Math.PI * 2);
     // ctx.stroke();
+    if (game["players"].length >= 4) {
+        var p4_c1 = new Image();
+        p4_c1.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p4_c1, x1 + x2 * 2 / 3, y1 + y2 - card_height, card_width, card_height);
+        }
 
-    var p4_c1 = new Image();
-    p4_c1.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p4_c1, x1 + x2 * 2 / 3, y1 + y2 - card_height, card_width, card_height);
+        p4_c1.src = game["players"][3]["cards"][0]["link"];
+
+        var p4_c2 = new Image();
+        p4_c2.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p4_c2, x1 + x2 * 2 / 3 - card_width, y1 + y2 - card_height, card_width, card_height);
+        }
+
+        p4_c2.src = game["players"][3]["cards"][1]["link"];
     }
-
-    p4_c1.src = game["players"][3]["cards"][0]["link"];
-
-    var p4_c2 = new Image();
-    p4_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p4_c2, x1 + x2 * 2 / 3 - card_width, y1 + y2 - card_height, card_width, card_height);
-    }
-
-    p4_c2.src = game["players"][3]["cards"][1]["link"];
-
 
     // Bottom two
     // ctx.beginPath();
     // // Loc of Player 5 or the bottomish left
     // ctx.arc(x1 + x2 / 3, y1 + y2, 4, 0, Math.PI * 2);
     // ctx.stroke();
+    if (game["players"].length >= 5) {
+        var p5_c1 = new Image();
+        p5_c1.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p5_c1, x1 + x2 / 3, y1 + y2 - card_height, card_width, card_height);
+        }
 
-    var p5_c1 = new Image();
-    p5_c1.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p5_c1, x1 + x2 / 3, y1 + y2 - card_height, card_width, card_height);
+        p5_c1.src = game["players"][4]["cards"][0]["link"];
+
+        var p5_c2 = new Image();
+        p5_c2.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p5_c2, x1 + x2 / 3 - card_width, y1 + y2 - card_height, card_width, card_height);
+        }
+
+        p5_c2.src = game["players"][4]["cards"][1]["link"];
     }
-
-    p5_c1.src = game["players"][4]["cards"][0]["link"];
-
-    var p5_c2 = new Image();
-    p5_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p5_c2, x1 + x2 / 3 - card_width, y1 + y2 - card_height, card_width, card_height);
-    }
-
-    p5_c2.src = game["players"][4]["cards"][1]["link"];
-
 
     // ctx.beginPath();
     // // Loc of Player 6 or the player of left side
@@ -207,22 +205,23 @@ function draw_players(game, ctx, x1, y1, x2, y2, r) {
     // ctx.rotate(Math.PI / 2);
     // ctx.fillText('Player 6', 0, 0);
     // ctx.restore();
+    if (game["players"].length >= 6) {
+        var p6_c1 = new Image();
+        p6_c1.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p6_c1, x1 + p6andp3_similar_offset, y2 / 2 + y1, card_width, card_height);
+        }
 
-    var p6_c1 = new Image();
-    p6_c1.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p6_c1, x1 + p6andp3_similar_offset, y2 / 2 + y1, card_width, card_height);
+        p6_c1.src = game["players"][5]["cards"][0]["link"];
+
+        var p6_c2 = new Image();
+        p6_c2.onload = function () {
+            //ctx.rotate();
+            ctx.drawImage(p6_c2, x1 + p6andp3_similar_offset, y2 / 2 + y1 - card_height, card_width, card_height);
+        }
+
+        p6_c2.src = game["players"][5]["cards"][1]["link"];
     }
-
-    p6_c1.src = game["players"][5]["cards"][0]["link"];
-
-    var p6_c2 = new Image();
-    p6_c2.onload = function () {
-        //ctx.rotate();
-        ctx.drawImage(p6_c2, x1 + p6andp3_similar_offset, y2 / 2 + y1 - card_height, card_width, card_height);
-    }
-
-    p6_c2.src = game["players"][5]["cards"][1]["link"];
     //ctx.beginPath();
     // var p6_c1 = new Image();
     // p1_c1.onload = function () {
@@ -238,37 +237,48 @@ function draw_players(game, ctx, x1, y1, x2, y2, r) {
 
 function draw_names_and_scores(game, ctx, x1, y1, x2, y2, r) {
     // player 1
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
-    ctx.fillText(game["players"][0]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 - 15);
+    if (game["players"].length >= 1) {
+        ctx.font = '30px serif';
+        ctx.fontStyle = "aqua";
+        ctx.fillText(game["players"][0]["ip"], x1 + x2 / 3 - card_width / 2, y1 - 55);
+        ctx.fillText(game["players"][0]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 - 15);
+    }
     // player 2
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
-    ctx.fillText(game["players"][1]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
-
+    if (game["players"].length >= 2) {
+        ctx.font = '30px serif';
+        ctx.fontStyle = "aqua";
+        ctx.fillText(game["players"][1]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 55);
+        ctx.fillText(game["players"][1]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 - 15);
+    }
     // player 3
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
-    ctx.fillText(game["players"][2]["handvalue"], x2 + x1, y2 / 2 + y1 + 30);
+    if (game["players"].length >= 3) {
+        ctx.font = '30px serif';
+        ctx.fontStyle = "aqua";
+        ctx.fillText(game["players"][2]["ip"], x2 + x1, y2 / 2 + y1);
+        ctx.fillText(game["players"][2]["handvalue"], x2 + x1, y2 / 2 + y1 + 30);
+    }
     // player 4
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
-    ctx.fillText(game["players"][3]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    if (game["players"].length >= 4) {
+        ctx.font = '30px serif';
+        ctx.fontStyle = "aqua";
+        ctx.fillText(game["players"][3]["ip"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30);
+        ctx.fillText(game["players"][3]["handvalue"], x1 + x2 * 2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    }
     // player 5
-    ctx.stroke();
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
-    ctx.fillText(game["players"][4]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    if (game["players"].length >= 5) {
+        ctx.stroke();
+        ctx.font = '30px serif';
+        ctx.fontStyle = "aqua";
+        ctx.fillText(game["players"][4]["ip"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30);
+        ctx.fillText(game["players"][4]["handvalue"], x1 + x2 / 3 - card_width / 2, y1 + y2 + 30 + 30);
+    }
     // player 6
-    ctx.font = '30px serif';
-    ctx.fontStyle = "aqua";
-    ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
-    ctx.fillText(game["players"][5]["handvalue"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
+    if (game["players"].length >= 6) {
+        ctx.font = '30px serif';
+        ctx.fontStyle = "aqua";
+        ctx.fillText(game["players"][5]["ip"], x1 - card_width * 1.3, y2 / 2 + y1);
+        ctx.fillText(game["players"][5]["handvalue"], x1 - card_width * 1.3, y2 / 2 + y1 + 30);
+    }
 }
 
 function draw_flop(game, ctx, x1, y1, x2, y2, r) {
@@ -372,6 +382,9 @@ var r = 125;
 var ctx = canvas.getContext('2d');
 
 var number_of_player = 6;
+if (number_of_player > 6) {
+    number_of_player = 6;
+}
 // var a = wasm.new_game();
 // var window_height = $(window).height();
 // var window_width = $(window).width();
