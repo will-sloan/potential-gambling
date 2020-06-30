@@ -1,9 +1,5 @@
 #![allow(dead_code)]
 mod arrays;
-
-
-#![allow(dead_code)]
-mod arrays;
 //extern crate libc;
 
 // fn main() {
@@ -63,30 +59,6 @@ fn main() {
     // 	freq[i] = 0;
     let mut i: u32 = 0;
     let mut j: u32 = 0;
-    //println!("3");
-    // for a in 0..48 {
-    //     hand[0] = deck[a];
-    //     let mut b = a + 1;
-    //     while b < 49 {
-    //         let mut c = b + 1;
-    //         while c < 50 {
-    //             let mut d = c + 1;
-    //             while d < 51 {
-    //                 let mut e = d + 1;
-    //                 while e < 52 {
-    //                     hand[4] = deck[e];
-    //                     i = eval_5cards(hand[0], hand[0], hand[0], hand[0], hand[0]);
-    //                     j = hand_rank(i);
-    //                     freq[j as usize] += 1;
-    //                     e += 1;
-    //                 }
-    //                 d += 1;
-    //             }
-    //             c += 1;
-    //         }
-    //         b += 1;
-    //     }
-    // }
     for i1 in 0..52 {
         //println!("5 part: {}", i1);
         for i2 in (i1 + 1)..52 {
@@ -120,75 +92,11 @@ fn main() {
     for q in 1..10 {
         println!("{}: {}", value_str[q as usize], freq[q as usize])
     }
-    // Loop over every possible five-card hand.
-    // for (a = 0; a < 48; a++)
-    // {
-    // 	hand[0] = deck[a];
-    // 	for (b = a + 1; b < 49; b++)
-    // 	{
-    // 		hand[1] = deck[b];
-    // 		for (c = b + 1; c < 50; c++)
-    // 		{
-    // 			hand[2] = deck[c];
-    // 			for (d = c + 1; d < 51; d++)
-    // 			{
-    // 				hand[3] = deck[d];
-    // 				for (e = d + 1; e < 52; e++)
-    // 				{
-    // 					hand[4] = deck[e];
-
-    // 					i = eval_5hand(hand);
-    // 					j = hand_rank(i);
-    // 					freq[j]++;
-    // 				}
-    // 			}
-    // 		}
-    // 	}
-    // }
-
-    // for (i = 1; i <= 9; i++)
-    // 	printf("%15s: %8d\n", value_str[i], freq[i]);
 }
 
 fn findit(key: u32) -> u32 {
-    // let mut low: usize = 0;
-    // let mut high: usize = 4887;
-    // let mut mid: usize;
     let spot = arrays::products.binary_search(&key).unwrap();
     spot as u32
-    // match spot {
-    //     Ok(x) => x,
-    //     Err(why) => {
-    //         Err(why)
-    //         //panic!("Couldnt find key in binary serach: {}", why);
-    //         //0
-    //     }
-    // }
-    // while low <= high {
-    //     mid = (high + low) >> 1;
-    //     if key < arrays::products[mid] {
-    //         println!(
-    //             "key: {key} arrays::products[mid]: {arr} High: {high} Mid: {mid}",
-    //             high = high,
-    //             mid = mid,
-    //             key = key,
-    //             arr = arrays::products[mid]
-    //         );
-    //         high = mid - 1;
-    //     } else if key > arrays::products[mid] {
-    //         println!(
-    //             "key: {key} arrays::products[mid]: {arr} Low: {low} Mid: {mid}",
-    //             low = low,
-    //             mid = mid,
-    //             key = key,
-    //             arr = arrays::products[mid]
-    //         );
-    //         low = mid + 1;
-    //     } else {
-    //         return mid as u32;
-    //     }
-    // }
-    //panic!("No match for key: {}", key);
 }
 
 fn init_deck() -> [u32; 52] {
@@ -260,7 +168,6 @@ fn hand_rank(val: u32) -> u32 {
         _ => return STRAIGHT_FLUSH,                //   10 straight-flushes
     }
 }
-
 
 /*
 fn findit(key: u32) -> u32 {
