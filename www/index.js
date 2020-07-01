@@ -374,8 +374,8 @@ function draw_winner(game, ctx) {
 var button1 = document.getElementById("player0");
 button1.style = "position: absolute; top:300px; left:200px";
 // button1.onclick = "myFunction()";
-var moves0 = document.getElementById("moves0");
-moves0.style = "position: absolute; top:100px; left:500px"
+// var moves0 = document.getElementById("moves0");
+// moves0.style = "position: absolute; top:100px; left:500px"
 
 
 var canvas = document.getElementById('canvas');
@@ -392,6 +392,8 @@ var number_of_player = 6;
 if (number_of_player > 6) {
     number_of_player = 6;
 }
+
+
 // var a = wasm.new_game();
 // var window_height = $(window).height();
 // var window_width = $(window).width();
